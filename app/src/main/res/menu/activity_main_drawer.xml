@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_inicio"
+            android:icon="@mipmap/homeicon"
+            android:title="@string/inicio" />
+        <item
+            android:id="@+id/nav_rutinas"
+            android:icon="@mipmap/rutinasicon"
+            android:title="@string/rutinas" />
+        <item
+            android:id="@+id/nav_alimentacion"
+            android:icon="@mipmap/alimenicon"
+            android:title="@string/alimentacion"/>
+        <item
+            android:id="@+id/nav_progreso"
+            android:icon="@mipmap/progresoicon"
+            android:title="@string/progreso"/>
+    </group>
+
+    <item android:title="Usuario">
+        <menu>
+            <item
+                android:id="@+id/nav_perfil"
+                android:icon="@mipmap/perfilicon"
+                android:title="@string/perfil" />
+            <item
+                android:id="@+id/nav_salir"
+                android:icon="@mipmap/saliricon"
+                android:title="@string/salir" />
+        </menu>
+    </item>
+
+    <item android:title="Reportar">
+        <menu>
+            <item
+                android:id="@+id/nav_reportar"
+                android:icon="@mipmap/problemicon"
+                android:title="@string/reportar"/>
+        </menu>
+    </item>
+
+</menu>
