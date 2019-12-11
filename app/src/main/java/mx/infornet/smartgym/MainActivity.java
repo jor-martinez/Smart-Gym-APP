@@ -185,102 +185,107 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         db.close();
 
-        if (objetivo.equals("Perder peso")){
-            request_get_objetivo = new StringRequest(Request.Method.GET, Config.GET_OBJETIVO_URL, new Response.Listener<String>() {
-                @Override
-                public void onResponse(String response) {
+        switch (objetivo) {
+            case "Perder peso":
+                request_get_objetivo = new StringRequest(Request.Method.GET, Config.GET_OBJETIVO_URL, new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
 
-                    try {
-                        JSONArray respuesta = new JSONArray(response);
-                        Log.d("res_objetivo", respuesta.toString());
+                        try {
+                            JSONArray respuesta = new JSONArray(response);
+                            Log.d("res_objetivo", respuesta.toString());
 
-                        if (respuesta.toString().equals("[]")){
+                            if (respuesta.toString().equals("[]")) {
 
-                            Toast.makeText(getApplicationContext(), "no hay datos", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(), "no hay datos", Toast.LENGTH_LONG).show();
 
-                            ShowPerderPesoIni();
+                                ShowPerderPesoIni();
 
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
-
-                    } catch (JSONException e){
-                        e.printStackTrace();
                     }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("err_res_objetivo", error.toString());
+                    }
+                }) {
+                    @Override
+                    public Map<String, String> getHeaders() throws AuthFailureError {
+                        HashMap<String, String> headers = new HashMap<>();
+                        headers.put("Authorization", token_type + " " + token);
+                        return headers;
+                    }
+                };
+
+                queue_obj.add(request_get_objetivo);
+
+                ConexionSQLiteHelperPeso conexion = new ConexionSQLiteHelperPeso(getApplicationContext(), "objetivo_perder_peso", null, 2);
+                SQLiteDatabase dbp = conexion.getWritableDatabase();
+
+                try {
+
+                    String query = "SELECT * FROM objetivo_perder_peso where _ID=1";
+                    //String imagenUsuario = null;
+
+                    Cursor cursor2 = dbp.rawQuery(query, null);
+
+                    for (cursor2.moveToFirst(); !cursor2.isAfterLast(); cursor2.moveToNext()) {
+
+                        fecha_termino = cursor2.getString(cursor2.getColumnIndex("fechaFinal"));
+                    }
+
+                } catch (Exception e) {
+
+                    Toast toast = Toast.makeText(getApplicationContext(), "Error: " + e.toString(), Toast.LENGTH_SHORT);
+                    toast.show();
                 }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Log.e("err_res_objetivo", error.toString());
-                }
-            }){
-                @Override
-                public Map<String, String> getHeaders()throws AuthFailureError {
-                    HashMap<String, String> headers = new HashMap<>();
-                    headers.put("Authorization", token_type+" "+token);
-                    return headers;
-                }
-            };
 
-            queue_obj.add(request_get_objetivo);
+                dbp.close();
 
-            ConexionSQLiteHelperPeso  conexion = new ConexionSQLiteHelperPeso(getApplicationContext(), "objetivo_perder_peso", null, 2);
-            SQLiteDatabase dbp = conexion.getWritableDatabase();
+                Calendar cal = Calendar.getInstance();
+                SimpleDateFormat sf = new SimpleDateFormat("dd/MMM/yyyy", Locale.getDefault());
 
-            try {
-
-                String query = "SELECT * FROM objetivo_perder_peso where _ID=1";
-                //String imagenUsuario = null;
-
-                Cursor cursor2 = dbp.rawQuery(query, null);
-
-                for (cursor2.moveToFirst(); !cursor2.isAfterLast(); cursor2.moveToNext()) {
-
-                    fecha_termino = cursor2.getString(cursor2.getColumnIndex("fechaFinal"));
+                try {
+                    cal.setTime(sf.parse(fecha_termino));
+                } catch (ParseException e) {
+                    e.printStackTrace();
                 }
 
-            } catch (Exception e) {
+                long hoy = System.currentTimeMillis();
+                long despues = cal.getTimeInMillis();
 
-                Toast toast = Toast.makeText(getApplicationContext(), "Error: " + e.toString(), Toast.LENGTH_SHORT);
-                toast.show();
-            }
+                Log.d("bool hoy > despues", String.valueOf(hoy >= despues));
 
-            dbp.close();
+                if (hoy >= despues) {
 
-            Calendar cal = Calendar.getInstance();
-            SimpleDateFormat sf = new SimpleDateFormat("dd/MMM/yyyy", Locale.getDefault());
+                    Intent in = new Intent(getApplicationContext(), BroadcastAvancePerderPeso.class);
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), ID_PENDING_AVANCE, in, PendingIntent.FLAG_UPDATE_CURRENT);
 
-            try {
-                cal.setTime(sf.parse(fecha_termino));
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+                    AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                    am.cancel(pendingIntent);
+                    Log.d("alarma_avance", "alarma cancelada");
 
-            long hoy = System.currentTimeMillis();
-            long despues = cal.getTimeInMillis();
+                    //en teoria deberia preguntar si quiere otro objetivo y se tendria que eliminar la bd y los datos en backend
 
-            if (hoy <= despues){
+                    /*boolean alarmUP = (PendingIntent.getBroadcast(getApplicationContext(), ID_PENDING_AVANCE, new Intent(getApplicationContext(), BroadcastAvancePerderPeso.class), PendingIntent.FLAG_NO_CREATE) != null);
 
-                boolean alarmUP = (PendingIntent.getBroadcast(getApplicationContext(), ID_PENDING_AVANCE, new Intent(getApplicationContext(), BroadcastAvancePerderPeso.class), PendingIntent.FLAG_NO_CREATE) != null);
-
-                if (alarmUP){
-                    Log.d("alarma_avance", "Alarma YA activada");
+                    if (alarmUP) {
+                        Log.d("alarma_avance", "Alarma YA activada");
+                    }*/
                 }
-            } else {
-                Intent in = new Intent(getApplicationContext(), BroadcastAvancePerderPeso.class);
-                PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), ID_PENDING_AVANCE, in, PendingIntent.FLAG_UPDATE_CURRENT);
-
-                AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-                am.cancel(pendingIntent);
-                Log.d("alarma_avance", "alarma cancelada");
-
-                //en teoria deberia preguntar si quiere otro objetivo y se tendria que eliminar la bd y los datos en backend
-
-            }
 
 
-        } else if (objetivo.equals("Aumento de masa muscular")){
-            //acciones para este objetivo
-        } else if (objetivo.equals("Aumento de fuerza")){
-            //acciones para este objetivo
+                break;
+            case "Aumento de masa muscular":
+                //acciones para este objetivo
+                break;
+            case "Aumento de fuerza":
+                //acciones para este objetivo
+                break;
         }
 
 
