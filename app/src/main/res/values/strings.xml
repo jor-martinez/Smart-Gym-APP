@@ -87,4 +87,5 @@
     <string name="objetivo_por_semana">Objetivo por semana</string>
     <string name="info1_avance_perder_peso">Avance</string>
     <string name="info2_avance_perder_peso">Por favor introduce cuál es tu peso al día de hoy para seguir calculando tu progreso.</string>
+    <string name="ok">Ok</string>
 </resources>

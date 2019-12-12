@@ -41,7 +41,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RutinasActivity extends AppCompatActivity {
+public class RutinasActivity extends AppCompatActivity{
 
     private ImageView btn_back, btn_add;
     private TextView error;
@@ -149,7 +149,7 @@ public class RutinasActivity extends AppCompatActivity {
 
                     //Log.d("RESPONSE", array.toString());
 
-                    if (array.toString().equals("[]")){
+                    if (array.toString().equals("[null]")){
                         error.setVisibility(View.VISIBLE);
                         error.setText(R.string.errorrutinas);
                     } else{
@@ -201,6 +201,8 @@ public class RutinasActivity extends AppCompatActivity {
 
         queue.add(request);
     }
+
+
 
     @Override
     public void onBackPressed() {

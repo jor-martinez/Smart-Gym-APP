@@ -57,11 +57,13 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -70,7 +72,7 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, SensorEventListener {
 
     private Context context = this;
-    private Dialog dialog, dialog_report, dialog_perder_peso, dialog_ok_perder_peso;
+    private Dialog dialog, dialog_report;
     private List<Frases> frasesList;
     private ParseJson parseJson;
     private SensorManager sensorManager;
@@ -78,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private StringRequest request, request_get_objetivo;
     private JsonObjectRequest request_save_perder_peso;
     private RequestQueue queue, queue_obj, queue_save_perder_peso;
-    private String objetivo, token, token_type, fecha_termino;
+    private String objetivo, token, token_type;
     private Calendar calendar, calendar1;
     static long despues;
 
@@ -101,8 +103,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         dialog = new Dialog(context);
         dialog_report = new Dialog(context);
-        dialog_perder_peso = new Dialog(context);
-        dialog_ok_perder_peso = new Dialog(context);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -177,118 +177,85 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 objetivo = cursor.getString(cursor.getColumnIndex("objetivo"));
             }
 
+            cursor.close();
+
         }catch (Exception e){
 
             Toast toast = Toast.makeText(getApplicationContext(), "Error: "+  e.toString(), Toast.LENGTH_SHORT);
             toast.show();
         }
-
         db.close();
 
-        switch (objetivo) {
-            case "Perder peso":
-                request_get_objetivo = new StringRequest(Request.Method.GET, Config.GET_OBJETIVO_URL, new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
+        ConexionSQLiteHelperPeso conexion = new ConexionSQLiteHelperPeso(getApplicationContext(), "objetivo_perder_peso", null, 2);
+        SQLiteDatabase dbp = conexion.getWritableDatabase();
 
-                        try {
-                            JSONArray respuesta = new JSONArray(response);
-                            Log.d("res_objetivo", respuesta.toString());
+        String fecha_termino = "01/01/1999";
 
-                            if (respuesta.toString().equals("[]")) {
+        try {
 
-                                Toast.makeText(getApplicationContext(), "no hay datos", Toast.LENGTH_LONG).show();
+            String query = "SELECT * FROM objetivo_perder_peso where _ID=1";
+            //String imagenUsuario = null;
 
-                                ShowPerderPesoIni();
+            Cursor cursor2 = dbp.rawQuery(query, null);
 
-                            }
+            for (cursor2.moveToFirst(); !cursor2.isAfterLast(); cursor2.moveToNext()) {
 
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e("err_res_objetivo", error.toString());
-                    }
-                }) {
-                    @Override
-                    public Map<String, String> getHeaders() throws AuthFailureError {
-                        HashMap<String, String> headers = new HashMap<>();
-                        headers.put("Authorization", token_type + " " + token);
-                        return headers;
-                    }
-                };
+                fecha_termino = cursor2.getString(cursor2.getColumnIndex("fechaFinal"));
+            }
 
-                queue_obj.add(request_get_objetivo);
+            cursor2.close();
 
-                ConexionSQLiteHelperPeso conexion = new ConexionSQLiteHelperPeso(getApplicationContext(), "objetivo_perder_peso", null, 2);
-                SQLiteDatabase dbp = conexion.getWritableDatabase();
+        } catch (Exception e) {
 
-                try {
+            Toast toast = Toast.makeText(getApplicationContext(), "Error: " + e.toString(), Toast.LENGTH_SHORT);
+            toast.show();
+        }
 
-                    String query = "SELECT * FROM objetivo_perder_peso where _ID=1";
-                    //String imagenUsuario = null;
+        dbp.close();
 
-                    Cursor cursor2 = dbp.rawQuery(query, null);
+        System.out.println("fecha final "+fecha_termino);
 
-                    for (cursor2.moveToFirst(); !cursor2.isAfterLast(); cursor2.moveToNext()) {
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
 
-                        fecha_termino = cursor2.getString(cursor2.getColumnIndex("fechaFinal"));
-                    }
+        try {
+            cal.setTime(sf.parse(fecha_termino));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
-                } catch (Exception e) {
+        long hoy = System.currentTimeMillis();
+        long despues = cal.getTimeInMillis();
 
-                    Toast toast = Toast.makeText(getApplicationContext(), "Error: " + e.toString(), Toast.LENGTH_SHORT);
-                    toast.show();
-                }
+        System.out.println("hoy: " +hoy);
+        System.out.println("despues: " +despues);
 
-                dbp.close();
+        Log.d("bool hoy > despues", String.valueOf(hoy >= despues));
 
-                Calendar cal = Calendar.getInstance();
-                SimpleDateFormat sf = new SimpleDateFormat("dd/MMM/yyyy", Locale.getDefault());
+        if (hoy >= despues) {
 
-                try {
-                    cal.setTime(sf.parse(fecha_termino));
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
+            Intent in = new Intent(getApplicationContext(), BroadcastAvancePerderPeso.class);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), ID_PENDING_AVANCE, in, PendingIntent.FLAG_UPDATE_CURRENT);
 
-                long hoy = System.currentTimeMillis();
-                long despues = cal.getTimeInMillis();
+            AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            am.cancel(pendingIntent);
+            Log.d("alarma_avance", "alarma cancelada");
 
-                Log.d("bool hoy > despues", String.valueOf(hoy >= despues));
-
-                if (hoy >= despues) {
-
-                    Intent in = new Intent(getApplicationContext(), BroadcastAvancePerderPeso.class);
-                    PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), ID_PENDING_AVANCE, in, PendingIntent.FLAG_UPDATE_CURRENT);
-
-                    AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-                    am.cancel(pendingIntent);
-                    Log.d("alarma_avance", "alarma cancelada");
-
-                    //en teoria deberia preguntar si quiere otro objetivo y se tendria que eliminar la bd y los datos en backend
+            //en teoria deberia preguntar si quiere otro objetivo y se tendria que eliminar la bd y los datos en backend
 
                     /*boolean alarmUP = (PendingIntent.getBroadcast(getApplicationContext(), ID_PENDING_AVANCE, new Intent(getApplicationContext(), BroadcastAvancePerderPeso.class), PendingIntent.FLAG_NO_CREATE) != null);
 
                     if (alarmUP) {
                         Log.d("alarma_avance", "Alarma YA activada");
                     }*/
-                }
-
-
-                break;
-            case "Aumento de masa muscular":
-                //acciones para este objetivo
-                break;
-            case "Aumento de fuerza":
-                //acciones para este objetivo
-                break;
         }
 
-
+        new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        ShowFrase();
+                    }
+                }, 3000);
 
         //prueba info de perder peso, despues se eliminará
         //ShowOkPerderPeso(70.5, 10, 3);
@@ -610,319 +577,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         long segsTranscurridos = diferencia / segsMilli;
 
         return diasTranscurridos;
-    }
-
-    private void ShowPerderPesoIni(){
-
-        final TextInputEditText peso_inicial, estatura, tiempo, meta;
-        MaterialButton btn_guardar;
-        final StringRequest request;
-        RequestQueue queue;
-
-        dialog_perder_peso.setContentView(R.layout.perder_peso_init_layout);
-
-        peso_inicial = dialog_perder_peso.findViewById(R.id.peso_inicial);
-        estatura = dialog_perder_peso.findViewById(R.id.estatura);
-        tiempo = dialog_perder_peso.findViewById(R.id.tiempo);
-        meta = dialog_perder_peso.findViewById(R.id.metaKG);
-        btn_guardar = dialog_perder_peso.findViewById(R.id.btn_save_bajar_peso);
-
-        btn_guardar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String peso = peso_inicial.getText().toString();
-                String estat = estatura.getText().toString();
-                final String time = tiempo.getText().toString();
-                String goal = meta.getText().toString();
-
-
-                if (TextUtils.isEmpty(peso)){
-                    peso_inicial.setError("Introduce tu peso");
-                    peso_inicial.requestFocus();
-                } else if (TextUtils.isEmpty(estat)){
-                    estatura.setError("Introduce tu estatura");
-                    estatura.requestFocus();
-                } else if (TextUtils.isEmpty(time)){
-                    tiempo.setError("Introduce el tiempo de la meta");
-                    tiempo.requestFocus();
-                } else if (TextUtils.isEmpty(goal)){
-                    meta.setError("Introduce tu meta en Kg");
-                    meta.requestFocus();
-                } else {
-
-                    final double peso_decimal = Double.parseDouble(peso);
-                    final double estatura_decimal = Double.parseDouble(estat);
-                    final int tiempo_int = Integer.parseInt(time);
-                    final int meta_int = Integer.parseInt(goal);
-
-                    JSONObject json_save = new JSONObject();
-
-                    try {
-                        json_save.put("estatura", estatura_decimal);
-                        json_save.put("peso_inicial", peso_decimal);
-                        json_save.put("meta", meta_int);
-                        json_save.put("tiempo", tiempo_int);
-                    } catch (JSONException e){
-                        e.printStackTrace();
-                    }
-
-                    Toast.makeText(getApplicationContext(), "Chido !", Toast.LENGTH_LONG).show();
-
-                    request_save_perder_peso = new JsonObjectRequest(Request.Method.POST, Config.POST_OBJETIVO_URL, json_save, new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject response) {
-                            Log.d("res_objetivo_post", response.toString());
-
-                            if (response.has("message")){
-                                String mensj = null;
-                                try {
-                                    mensj = response.getString("message");
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-
-                                Toast.makeText(getApplicationContext(), mensj, Toast.LENGTH_LONG).show();
-
-                                //fecha actual
-                                Calendar calendar = Calendar.getInstance();
-                                SimpleDateFormat df = new SimpleDateFormat("dd/MMM/yyyy", Locale.getDefault());
-                                String fecha_actual = df.format(calendar.getTime());
-
-                                //fecha final
-                                //se hace el calculo dependiendo del tiempo que puso el miembro
-                                Calendar caf = Calendar.getInstance();
-                                caf.add(Calendar.MONTH, tiempo_int);
-                                SimpleDateFormat sf = new SimpleDateFormat("dd/MMM/yyyy", Locale.getDefault());
-                                String fecha_final = sf.format(caf.getTime());
-
-                                //se guardan los datos del usuario para bajar de peso en una base de datos
-                                ConexionSQLiteHelperPeso  conn = new ConexionSQLiteHelperPeso(getApplicationContext(), "objetivo_perder_peso", null, 2);
-                                SQLiteDatabase db = conn.getWritableDatabase();
-
-                                ContentValues datos = new ContentValues();
-
-                                datos.put("estatura", estatura_decimal);
-                                datos.put("meta", meta_int);
-                                datos.put("tiempo", tiempo_int);
-                                datos.put("peso", peso_decimal);
-                                datos.put("fecha", fecha_actual);
-                                datos.put("fechaFinal", fecha_final);
-
-                                db.insert("objetivo_perder_peso", null, datos);
-                                db.close();
-
-                                Log.d("datos peso save", "se guardaron los datos en la base de datos perder peso");
-
-                                dialog_perder_peso.dismiss();
-
-                                ShowOkPerderPeso(peso_decimal, meta_int, tiempo_int);
-
-
-                                switch (tiempo_int){
-                                    case 1:
-                                        boolean alarmUP = (PendingIntent.getBroadcast(getApplicationContext(), ID_PENDING_AVANCE, new Intent(getApplicationContext(), BroadcastAvancePerderPeso.class), PendingIntent.FLAG_NO_CREATE) != null);
-
-                                        if (alarmUP){
-                                            Log.d("alarma_avance", "Alarma YA activada");
-                                        } else {
-
-                                            Calendar c = Calendar.getInstance();
-                                            c.add(Calendar.WEEK_OF_MONTH, 1);
-                                            c.set(Calendar.HOUR, 12);
-
-                                            Log.d("sig semana", c.getTime().toString());
-
-                                            Intent in = new Intent(getApplicationContext(), BroadcastAvancePerderPeso.class);
-                                            PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), ID_PENDING_AVANCE, in, PendingIntent.FLAG_UPDATE_CURRENT);
-
-                                            AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-
-                                            Log.d("alarma_avance", "alarma iniciada");
-                                            am.setRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), 7*1440*60000, pendingIntent);
-                                        }
-                                        break;
-                                    case 2:
-                                        boolean alarmUP1 = (PendingIntent.getBroadcast(getApplicationContext(), ID_PENDING_AVANCE, new Intent(getApplicationContext(), BroadcastAvancePerderPeso.class), PendingIntent.FLAG_NO_CREATE) != null);
-
-                                        if (alarmUP1){
-                                            Log.d("alarma_avance", "Alarma YA activada");
-                                        } else {
-
-                                            Calendar c = Calendar.getInstance();
-                                            c.add(Calendar.WEEK_OF_MONTH, 2);
-                                            c.set(Calendar.HOUR, 12);
-
-                                            Log.d("sig semana", c.getTime().toString());
-
-                                            Intent in = new Intent(getApplicationContext(), BroadcastAvancePerderPeso.class);
-                                            PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), ID_PENDING_AVANCE, in, PendingIntent.FLAG_UPDATE_CURRENT);
-
-                                            AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-
-                                            Log.d("alarma_avance", "alarma iniciada");
-                                            am.setRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), 7*1440*60000, pendingIntent);
-                                        }
-
-                                        break;
-
-                                    case 3:
-
-                                        boolean alarmUP2 = (PendingIntent.getBroadcast(getApplicationContext(), ID_PENDING_AVANCE, new Intent(getApplicationContext(), BroadcastAvancePerderPeso.class), PendingIntent.FLAG_NO_CREATE) != null);
-
-                                        if (alarmUP2){
-                                            Log.d("alarma_avance", "Alarma YA activada");
-                                        } else {
-
-                                            Calendar c = Calendar.getInstance();
-                                            c.add(Calendar.WEEK_OF_MONTH, 2);
-                                            c.set(Calendar.HOUR, 12);
-
-                                            Log.d("sig semana", c.getTime().toString());
-
-                                            Intent in = new Intent(getApplicationContext(), BroadcastAvancePerderPeso.class);
-                                            PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), ID_PENDING_AVANCE, in, PendingIntent.FLAG_UPDATE_CURRENT);
-
-                                            AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-
-                                            Log.d("alarma_avance", "alarma iniciada");
-                                            am.setRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), 7*1440*60000, pendingIntent);
-                                        }
-
-                                        break;
-                                }
-
-                            }
-
-
-                        }
-                    }, new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            Log.d("err_res_objetivo_post", error.toString());
-                        }
-                    }){
-                        @Override
-                        public Map<String, String> getHeaders()throws AuthFailureError {
-                            HashMap<String, String> headers = new HashMap<>();
-                            headers.put("Authorization", token_type+" "+token);
-                            return headers;
-                        }
-                    };
-
-                    queue_save_perder_peso.add(request_save_perder_peso);
-
-                }
-            }
-        });
-
-
-        //dialog_perder_peso.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialog_perder_peso.setCancelable(false);
-        dialog_perder_peso.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation_2;
-        dialog_perder_peso.show();
-
-    }
-
-    private void ShowOkPerderPeso(double peso, double meta, int tiempo){
-        ImageView close;
-        TextView tv_meta, tv_semana, tv_termino, tv_inicio, tv_pedir_datos;
-
-        dialog_ok_perder_peso.setContentView(R.layout.info_perder_peso_layout);
-
-        tv_meta = dialog_ok_perder_peso.findViewById(R.id.tv_meta_info_perder_peso);
-        tv_semana = dialog_ok_perder_peso.findViewById(R.id.tv_semana_info_perder_peso);
-        tv_termino = dialog_ok_perder_peso.findViewById(R.id.tv_termino_info_perder_peso);
-        tv_inicio = dialog_ok_perder_peso.findViewById(R.id.tv_inicio_info_perder_peso);
-        tv_pedir_datos = dialog_ok_perder_peso.findViewById(R.id.tv_pedir_datos_info_perder_peso);
-        close = dialog_ok_perder_peso.findViewById(R.id.btn_close_info_perder_peso);
-
-        close.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog_ok_perder_peso.dismiss();
-
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        ShowFrase();
-                    }
-                }, 3000);
-            }
-        });
-
-        //se obtiene la fecha de inicio que es la actual
-        calendar = Calendar.getInstance();
-        SimpleDateFormat df = new SimpleDateFormat("dd/MMM/yyyy", Locale.getDefault());
-        String fecha_actual = df.format(calendar.getTime());
-
-
-
-        DecimalFormat format = new DecimalFormat("#.00");
-        double peso_perder_semana;
-        String perderkgsem = "";
-        String perderkg = meta + " Kg";
-
-
-        String ultimo = "";
-
-        switch (tiempo){
-            case 1:
-                peso_perder_semana = meta / 4;
-                Log.d("semana", String.valueOf(peso_perder_semana));
-                perderkgsem = format.format(peso_perder_semana)+" Kg";
-                ultimo = "Cada semana te estaremos pidiendo tu avance para medir tu progreso. Acercate con tu coach para que te asigne las rutinas y alimentación adecuadas para cumplir tu objetivo.";
-
-                //se obtiene la fecha de un mes despues;
-                calendar1 = Calendar.getInstance();
-                calendar1.add(Calendar.MONTH, 1);
-                //calendar1.add(Calendar.WEEK_OF_MONTH,1);
-                SimpleDateFormat dff = new SimpleDateFormat("dd/MMM/yyyy", Locale.getDefault());
-                String fecha_final = dff.format(calendar1.getTime());
-                tv_termino.setText(fecha_final);
-                break;
-            case 2:
-                peso_perder_semana = meta / 8;
-                Log.d("semana", String.valueOf(peso_perder_semana));
-                perderkgsem = format.format(peso_perder_semana)+" Kg";
-                ultimo = "Cada 2 semanas te estaremos pidiendo tu avance para medir tu progreso. Acercate con tu coach para que te asigne las rutinas y alimentación adecuadas para cumplir tu objetivo.";
-
-                //se obtiene la fecha de un mes despues;
-                calendar1 = Calendar.getInstance();
-                calendar1.add(Calendar.MONTH, 2);
-                //calendar1.add(Calendar.WEEK_OF_MONTH,1);
-                SimpleDateFormat dff2 = new SimpleDateFormat("dd/MMM/yyyy", Locale.getDefault());
-                String fecha_final2 = dff2.format(calendar1.getTime());
-
-                tv_termino.setText(fecha_final2);
-
-                break;
-            case 3:
-                peso_perder_semana = meta / 12;
-                Log.d("semana", String.valueOf(peso_perder_semana));
-                perderkgsem = format.format(peso_perder_semana)+" Kg";
-                ultimo = "Cada 2 semanas te estaremos pidiendo tu avance para medir tu progreso. Acercate con tu coach para que te asigne las rutinas y alimentación adecuadas para cumplir tu objetivo.";
-
-                //se obtiene la fecha de un mes despues;
-                calendar1 = Calendar.getInstance();
-                calendar1.add(Calendar.MONTH, 3);
-                //calendar1.add(Calendar.WEEK_OF_MONTH,1);
-                SimpleDateFormat dff3 = new SimpleDateFormat("dd/MMM/yyyy", Locale.getDefault());
-                String fecha_final3 = dff3.format(calendar1.getTime());
-                tv_termino.setText(fecha_final3);
-                break;
-        }
-
-        tv_pedir_datos.setText(ultimo);
-        tv_inicio.setText(fecha_actual);
-
-        tv_meta.setText(perderkg);
-        tv_semana.setText(perderkgsem);
-
-
-        dialog_ok_perder_peso.setCancelable(false);
-        dialog_ok_perder_peso.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation_2;
-        dialog_ok_perder_peso.show();
-
     }
 
 }

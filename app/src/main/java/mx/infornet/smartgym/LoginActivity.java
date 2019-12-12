@@ -20,6 +20,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -43,9 +44,8 @@ public class LoginActivity extends AppCompatActivity {
 
     private TextInputEditText te_correo, te_password;
     private MaterialButton button_login;
-    private RequestQueue queue;
-    private Integer res;
-    private StringRequest request;
+    private RequestQueue queue, queue_obj;
+    private StringRequest request, request_get_objetivo;
     private ProgressBar progressBar;
     private TextView forget_pass;
 
@@ -68,26 +68,8 @@ public class LoginActivity extends AppCompatActivity {
         progressBar.setVisibility(View.GONE);
 
         queue = Volley.newRequestQueue(getApplicationContext());
+        queue_obj = Volley.newRequestQueue(getApplicationContext());
 
-        ConexionSQLiteHelper conexion = new ConexionSQLiteHelper(getApplicationContext(), "usuarios", null, 4);
-        SQLiteDatabase db = conexion.getWritableDatabase();
-
-        //Primero consulta si existe algun usuario
-        try {
-            String query = "SELECT * FROM usuarios";
-            Cursor cursor = db.rawQuery(query, null);
-
-            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()){
-                res = cursor.getCount();
-            }
-
-            if(res > 0){
-                startActivity(new Intent(getApplicationContext(), MainActivity.class));
-            }
-
-        }catch (Exception e){
-            e.getStackTrace();
-        }
 
         forget_pass.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -133,8 +115,8 @@ public class LoginActivity extends AppCompatActivity {
                                 Log.d("RESPUESTA", jsonObject.toString());
 
                                 String status = jsonObject.getString("status");
-                                String postToken = jsonObject.getString("access_token");
-                                String tokenType = jsonObject.getString("token_type");
+                                final String postToken = jsonObject.getString("access_token");
+                                final String tokenType = jsonObject.getString("token_type");
                                 String tokenExpire = jsonObject.getString("expires_in");
                                 JSONObject usuario = jsonObject.getJSONObject("usuario");
 
@@ -192,9 +174,50 @@ public class LoginActivity extends AppCompatActivity {
 
                                     Toast.makeText(getApplicationContext(), mensaje, Toast.LENGTH_LONG).show();
 
-                                    Intent i = new Intent(LoginActivity.this, MainActivity.class);
-                                    startActivity(i);
-                                    LoginActivity.this.finish();
+                                    if(postObjetivo.equals("Perder peso")){
+                                        request_get_objetivo = new StringRequest(Request.Method.GET, Config.GET_OBJETIVO_URL, new Response.Listener<String>() {
+                                            @Override
+                                            public void onResponse(String response) {
+
+                                                try {
+                                                    JSONArray respuesta = new JSONArray(response);
+                                                    Log.d("res_objetivo", respuesta.toString());
+
+                                                    if (respuesta.toString().equals("[]")) {
+
+                                                        //Toast.makeText(getApplicationContext(), "no hay datos", Toast.LENGTH_LONG).show();
+
+                                                        startActivity(new Intent(LoginActivity.this, PrePerderPesoActivity.class));
+                                                        LoginActivity.this.finish();
+
+                                                    } else {
+                                                        Intent i = new Intent(LoginActivity.this, MainActivity.class);
+                                                        startActivity(i);
+                                                        LoginActivity.this.finish();
+                                                    }
+
+                                                } catch (JSONException e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+                                        }, new Response.ErrorListener() {
+                                            @Override
+                                            public void onErrorResponse(VolleyError error) {
+                                                Log.e("err_res_objetivo", error.toString());
+                                            }
+                                        }) {
+                                            @Override
+                                            public Map<String, String> getHeaders() throws AuthFailureError {
+                                                HashMap<String, String> headers = new HashMap<>();
+                                                headers.put("Authorization", tokenType + " " + postToken);
+                                                return headers;
+                                            }
+                                        };
+
+                                        queue_obj.add(request_get_objetivo);
+
+
+                                    }
 
 
                                 } else if (status.equals("401")) {

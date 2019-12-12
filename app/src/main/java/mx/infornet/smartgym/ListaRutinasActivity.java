@@ -102,12 +102,17 @@ public class ListaRutinasActivity extends AppCompatActivity {
                 progressBar.setVisibility(View.GONE);
 
                 try {
+                    JSONObject jsonObject = new JSONObject(response);
 
-                    JSONArray array = new JSONArray(response);
+                    //JSONArray array = new JSONArray(response);
 
-                    Log.d("RES_RUTINAS_GYM", array.toString());
+                    JSONObject pagination = jsonObject.getJSONObject("pagination");
+                    JSONArray array = jsonObject.getJSONArray("data");
 
-                    if (array.toString().equals("[null]")){
+                    Log.d("paginacion", pagination.toString());
+                    Log.d("datos", array.toString());
+
+                    if (array.toString().equals("[]")){
                         error.setVisibility(View.VISIBLE);
                         error.setText(R.string.errorrutinasgym);
                     } else{
