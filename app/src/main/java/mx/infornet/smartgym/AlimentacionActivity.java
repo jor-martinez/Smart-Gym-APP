@@ -83,6 +83,7 @@ public class AlimentacionActivity extends AppCompatActivity {
                 token_type = cursor.getString(cursor.getColumnIndex("tokenType"));
             }
 
+            cursor.close();
         }catch (Exception e){
 
             Toast toast = Toast.makeText(getApplicationContext(), "Error: "+  e.toString(), Toast.LENGTH_SHORT);
@@ -91,7 +92,7 @@ public class AlimentacionActivity extends AppCompatActivity {
 
         db.close();
 
-        //Log.d("token", token);
+        Log.d("token", token);
 
         queue = Volley.newRequestQueue(getApplicationContext());
 
@@ -103,6 +104,7 @@ public class AlimentacionActivity extends AppCompatActivity {
 
                 try {
                     JSONObject jsonObject = new JSONObject(response);
+
                     Log.d("RESPONSE_PLAN", jsonObject.toString());
 
                     if (jsonObject.has("status")){
@@ -111,7 +113,7 @@ public class AlimentacionActivity extends AppCompatActivity {
                         if (status.equals("Token is Expired")){
                             Toast.makeText(getApplicationContext(), status+". Favor de iniciar sesión nuevamente", Toast.LENGTH_LONG).show();
 
-                            ConexionSQLiteHelper  conn = new ConexionSQLiteHelper(getApplicationContext(), "usuarios", null, 3);
+                            ConexionSQLiteHelper  conn = new ConexionSQLiteHelper(getApplicationContext(), "usuarios", null, 4);
                             SQLiteDatabase db = conn.getWritableDatabase();
                             db.execSQL("DELETE FROM usuarios");
 
@@ -119,6 +121,11 @@ public class AlimentacionActivity extends AppCompatActivity {
 
                             finish();
                         }
+
+                    } else if (jsonObject.toString().equals("")){
+
+                        error.setVisibility(View.VISIBLE);
+                        error.setText(R.string.erroralimentacion);
 
                     } else {
                         alimentacionList.add(new PlanesAlimentacion(

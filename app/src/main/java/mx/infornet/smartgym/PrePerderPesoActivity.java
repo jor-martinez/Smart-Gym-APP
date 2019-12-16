@@ -24,6 +24,7 @@ import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
@@ -135,7 +136,7 @@ public class PrePerderPesoActivity extends AppCompatActivity {
 
                     Toast.makeText(getApplicationContext(), "Chido !", Toast.LENGTH_LONG).show();
 
-                    request_save_perder_peso = new JsonObjectRequest(Request.Method.POST, Config.POST_OBJETIVO_URL, json_save, new Response.Listener<JSONObject>() {
+                    request_save_perder_peso = new JsonObjectRequest(Request.Method.POST, Config.POST_PERDER_PESO_URL, json_save, new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
 
@@ -270,6 +271,12 @@ public class PrePerderPesoActivity extends AppCompatActivity {
                             progressBar.setVisibility(View.GONE);
 
                             Log.d("err_res_objetivo_post", error.toString());
+
+                            if (error instanceof TimeoutError) {
+                                Toast.makeText(getApplicationContext(),
+                                        "Oops. Timeout error!",
+                                        Toast.LENGTH_LONG).show();
+                            }
                         }
                     }){
                         @Override

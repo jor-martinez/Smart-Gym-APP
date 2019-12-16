@@ -144,7 +144,7 @@ public class AvancePerderPesoActivity extends AppCompatActivity {
 
                     progressBar.setVisibility(View.VISIBLE);
 
-                    request = new JsonObjectRequest(Request.Method.POST, Config.POST_OBJETIVO_URL, json_save, new Response.Listener<JSONObject>() {
+                    request = new JsonObjectRequest(Request.Method.POST, Config.POST_PERDER_PESO_URL, json_save, new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
 

@@ -42,6 +42,7 @@ import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
@@ -357,6 +358,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     Log.e("err_res_logout", error.toString());
+
+                    if (error instanceof TimeoutError) {
+                        Toast.makeText(getApplicationContext(),
+                                "Oops. Timeout error!",
+                                Toast.LENGTH_LONG).show();
+                    }
                 }
             }){
                 @Override

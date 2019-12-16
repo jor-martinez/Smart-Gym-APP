@@ -88,4 +88,8 @@
     <string name="info1_avance_perder_peso">Avance</string>
     <string name="info2_avance_perder_peso">Por favor introduce cuál es tu peso al día de hoy para seguir calculando tu progreso.</string>
     <string name="ok">Ok</string>
+    <string name="pedir_datos_masamusc">Introduce tu primer registro para que posteriormente calculemos tu progreso</string>
+    <string name="introduce_peso_levantado">Introduce el peso levantado</string>
+    <string name="introduce_numero_repeticiones">Introduce el número de repeticiones</string>
+    <string name="repeticiones">Repeticiones</string>
 </resources>

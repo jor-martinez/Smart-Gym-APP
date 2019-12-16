@@ -15,11 +15,10 @@
 
         <ImageView
             android:id="@+id/btn_back_rutina"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:contentDescription="@string/back"
+            android:padding="5dp"
             app:srcCompat="@mipmap/arrow_back_white" />
 
         <TextView

@@ -27,6 +27,16 @@
                 android:padding="20dp">
 
                 <TextView
+                    android:id="@+id/textView16"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/peso"
+                    android:textSize="25sp"
+                    android:textAllCaps="true"
+                    android:gravity="center"
+                    android:textColor="@color/colorSecundary"/>
+
+                <TextView
                     android:id="@+id/textView12"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

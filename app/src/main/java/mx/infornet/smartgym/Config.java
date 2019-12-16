@@ -30,6 +30,8 @@ public class Config {
 
     public static final String GET_OBJETIVO_URL = "https://smartgym.infornet.mx/api/miembro/objetivo/perder-peso";
 
-    public static final String POST_OBJETIVO_URL = "https://smartgym.infornet.mx/api/miembro/objetivo/perder-peso";
+    public static final String POST_PERDER_PESO_URL = "https://smartgym.infornet.mx/api/miembro/objetivo/perder-peso";
+
+    public static final String POST_MASA_MUSC_URL = "https://smartgym.infornet.mx/api/miembro/objetivo/aumentar-fuerza";
 
 }
