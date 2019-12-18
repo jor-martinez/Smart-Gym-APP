@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private StringRequest request, request_get_objetivo;
     private JsonObjectRequest request_save_perder_peso;
     private RequestQueue queue, queue_obj, queue_save_perder_peso;
-    private String objetivo, token, token_type;
+    private String objetivo, token, token_type, fecha_termino="01/01/1999";
     private Calendar calendar, calendar1;
     static long despues;
 
@@ -187,69 +187,123 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         db.close();
 
-        ConexionSQLiteHelperPeso conexion = new ConexionSQLiteHelperPeso(getApplicationContext(), "objetivo_perder_peso", null, 2);
-        SQLiteDatabase dbp = conexion.getWritableDatabase();
+        if (objetivo.equals("Perder peso")){
+            ConexionSQLiteHelper conexion = new ConexionSQLiteHelper(getApplicationContext(), "objetivo_perder_peso", null, 4);
+            SQLiteDatabase dbp = conexion.getWritableDatabase();
 
-        String fecha_termino = "01/01/1999";
 
-        try {
+            try {
 
-            String query = "SELECT * FROM objetivo_perder_peso where _ID=1";
-            //String imagenUsuario = null;
+                String query = "SELECT * FROM objetivo_perder_peso where _ID=1";
 
-            Cursor cursor2 = dbp.rawQuery(query, null);
+                Cursor cursor2 = dbp.rawQuery(query, null);
 
-            for (cursor2.moveToFirst(); !cursor2.isAfterLast(); cursor2.moveToNext()) {
+                for (cursor2.moveToFirst(); !cursor2.isAfterLast(); cursor2.moveToNext()) {
 
-                fecha_termino = cursor2.getString(cursor2.getColumnIndex("fechaFinal"));
+                    fecha_termino = cursor2.getString(cursor2.getColumnIndex("fechaFinal"));
+                }
+
+                cursor2.close();
+
+            } catch (Exception e) {
+
+                Toast toast = Toast.makeText(getApplicationContext(), "Error: " + e.toString(), Toast.LENGTH_SHORT);
+                toast.show();
             }
 
-            cursor2.close();
+            dbp.close();
 
-        } catch (Exception e) {
+            System.out.println("fecha final "+fecha_termino);
 
-            Toast toast = Toast.makeText(getApplicationContext(), "Error: " + e.toString(), Toast.LENGTH_SHORT);
-            toast.show();
+            Calendar cal = Calendar.getInstance();
+            SimpleDateFormat sf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+
+            try {
+                cal.setTime(sf.parse(fecha_termino));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            long hoy = System.currentTimeMillis();
+            long despues = cal.getTimeInMillis();
+
+            System.out.println("hoy: " +hoy);
+            System.out.println("despues: " +despues);
+
+            Log.d("bool hoy > despues", String.valueOf(hoy >= despues));
+
+            if (hoy >= despues) {
+
+                Intent in = new Intent(getApplicationContext(), BroadcastAvancePerderPeso.class);
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), ID_PENDING_AVANCE, in, PendingIntent.FLAG_UPDATE_CURRENT);
+
+                AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                am.cancel(pendingIntent);
+                Log.d("alarma_avance", "alarma cancelada");
+
+                //en teoria deberia preguntar si quiere otro objetivo y se tendria que eliminar la bd y los datos en backend
+
+                //Tambien se borraría la tabla del objetivo perder peso
+            }
+        } else if (objetivo.equals("Incrementar fuerza")){
+
+            ConexionSQLiteHelper conexion = new ConexionSQLiteHelper(getApplicationContext(), "objetivo_fuerza", null, 4);
+            SQLiteDatabase dbp = conexion.getWritableDatabase();
+
+            try {
+
+                String query = "SELECT * FROM objetivo_fuerza where _ID=1";
+
+                Cursor cursor2 = dbp.rawQuery(query, null);
+
+                for (cursor2.moveToFirst(); !cursor2.isAfterLast(); cursor2.moveToNext()) {
+
+                    fecha_termino = cursor2.getString(cursor2.getColumnIndex("fechaFinal"));
+                }
+
+                cursor2.close();
+
+            } catch (Exception e) {
+
+                Toast toast = Toast.makeText(getApplicationContext(), "Error: " + e.toString(), Toast.LENGTH_SHORT);
+                toast.show();
+            }
+
+            dbp.close();
+
+            System.out.println("fecha final "+fecha_termino);
+
+            Calendar cal = Calendar.getInstance();
+            SimpleDateFormat sf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+
+            try {
+                cal.setTime(sf.parse(fecha_termino));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            long hoy = System.currentTimeMillis();
+            long despues = cal.getTimeInMillis();
+
+            System.out.println("hoy: " +hoy);
+            System.out.println("despues: " +despues);
+
+            Log.d("bool hoy > despues", String.valueOf(hoy >= despues));
+
+            if (hoy >= despues) {
+
+                Log.d("llegó el día", "la fecha final ha pasado (fuerza)");
+
+                //al pasar la fecha final se borran los datos de la tabla de fuerza
+
+                //en teoria deberia preguntar si quiere otro objetivo y se tendria que eliminar la bd y los datos en backend
+
+                //Tambien se borraría la tabla del objetivo perder peso
+            }
+
         }
 
-        dbp.close();
 
-        System.out.println("fecha final "+fecha_termino);
-
-        Calendar cal = Calendar.getInstance();
-        SimpleDateFormat sf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-
-        try {
-            cal.setTime(sf.parse(fecha_termino));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        long hoy = System.currentTimeMillis();
-        long despues = cal.getTimeInMillis();
-
-        System.out.println("hoy: " +hoy);
-        System.out.println("despues: " +despues);
-
-        Log.d("bool hoy > despues", String.valueOf(hoy >= despues));
-
-        if (hoy >= despues) {
-
-            Intent in = new Intent(getApplicationContext(), BroadcastAvancePerderPeso.class);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), ID_PENDING_AVANCE, in, PendingIntent.FLAG_UPDATE_CURRENT);
-
-            AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-            am.cancel(pendingIntent);
-            Log.d("alarma_avance", "alarma cancelada");
-
-            //en teoria deberia preguntar si quiere otro objetivo y se tendria que eliminar la bd y los datos en backend
-
-                    /*boolean alarmUP = (PendingIntent.getBroadcast(getApplicationContext(), ID_PENDING_AVANCE, new Intent(getApplicationContext(), BroadcastAvancePerderPeso.class), PendingIntent.FLAG_NO_CREATE) != null);
-
-                    if (alarmUP) {
-                        Log.d("alarma_avance", "Alarma YA activada");
-                    }*/
-        }
 
         new Handler().postDelayed(new Runnable() {
                     @Override
@@ -335,6 +389,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             if (objetivo.equals("Perder peso")){
                 startActivity(new Intent(getApplicationContext(), ProgresoPerderPesoActivity.class));
+            } else if (objetivo.equals("Incrementar fuerza")){
+                startActivity(new Intent(getApplicationContext(), AvanceFuerzaActivity.class));
             }
 
 

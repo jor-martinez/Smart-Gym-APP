@@ -41,15 +41,14 @@ public class ConexionSQLiteHelper extends SQLiteOpenHelper {
     private static final String KEY_TPESO_TIEMPO = "tiempo";
     private static final String KEY_TPESO_FECHA_FINAL = "fechaFinal";
 
-    private static final String TABLE_MASA = "objetivo_masa_muscular";
-    private static final String KEY_TMASA_ID = "_ID";
-    private static final String KEY_TMASA_PESO = "peso_levantado";
-    private static final String KEY_TMASA_REPETICIONES = "repeticiones";
-    private static final String KEY_TMASA_FECHA = "fecha";
-    private static final String KEY_TMASA_MUSCULO = "musculo";
-    private static final String KEY_TMASA_META = "meta";
-    private static final String KEY_TMASA_TIEMPO = "_ID";
-    private static final String KEY_TMASA_FECHA_FINAL = "_ID";
+    private static final String TABLE_FUERZA = "objetivo_fuerza";
+    private static final String KEY_TFUERZA_ID = "_ID";
+    private static final String KEY_TFUERZA_PESO = "pesoLevantado";
+    private static final String KEY_TFUERZA_REPETICIONES = "repeticiones";
+    private static final String KEY_TFUERZA_FECHA = "fecha";
+    private static final String KEY_TFUERZA_MUSCULO = "musculo";
+    private static final String KEY_TFUERZA_TIEMPO = "tiempo";
+    private static final String KEY_TFUERZA_FECHA_FINAL = "fechaFinal";
 
 
     public ConexionSQLiteHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
@@ -92,27 +91,26 @@ public class ConexionSQLiteHelper extends SQLiteOpenHelper {
                         + KEY_TPESO_FECHA + " TEXT NOT NULL, "
                         + KEY_TPESO_FECHA_FINAL + " TEXT)";
 
-        String CREATE_OBJETIVO_MASA_MUSCULAR =
-                "CREATE TABLE " + TABLE_MASA + "("
-                + KEY_TMASA_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + KEY_TMASA_PESO + " REAL, "
-                + KEY_TMASA_REPETICIONES + " INTEGER, "
-                + KEY_TMASA_MUSCULO + " TEXT, "
-                + KEY_TMASA_TIEMPO + " INTEGER, "
-                + KEY_TMASA_META + " INTEGER, "
-                + KEY_TMASA_FECHA + " TEXT, "
-                + KEY_TMASA_FECHA_FINAL + " TEXT)";
+        String CREATE_OBJETIVO_FUERZA =
+                "CREATE TABLE " + TABLE_FUERZA + "("
+                + KEY_TFUERZA_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + KEY_TFUERZA_PESO + " REAL, "
+                + KEY_TFUERZA_REPETICIONES + " INTEGER, "
+                + KEY_TFUERZA_MUSCULO + " TEXT, "
+                + KEY_TFUERZA_TIEMPO + " INTEGER, "
+                + KEY_TFUERZA_FECHA + " TEXT, "
+                + KEY_TFUERZA_FECHA_FINAL + " TEXT)";
 
         db.execSQL(CREATE_USERS_TABLE);
         db.execSQL(CREATE_OBJETIVO_PERDER_PESO_TABLE);
-        db.execSQL(CREATE_OBJETIVO_MASA_MUSCULAR);
+        db.execSQL(CREATE_OBJETIVO_FUERZA);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USER);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PESO);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_MASA);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_FUERZA);
         onCreate(db);
     }
 }

@@ -92,4 +92,8 @@
     <string name="introduce_peso_levantado">Introduce el peso levantado</string>
     <string name="introduce_numero_repeticiones">Introduce el número de repeticiones</string>
     <string name="repeticiones">Repeticiones</string>
+    <string name="musculo">Músculo</string>
+    <string name="fuerza_del_primer_registro">Fuerza del primer registro</string>
+    <string name="info1_avance_fuerza">Registra tu avances en esta pantalla, puedes agregar los registros que gustes antes de la fecha limite</string>
+    <string name="info2_avance_fuerza">Puedes acceder en el botón de abajo, para consultar tus avances</string>
 </resources>

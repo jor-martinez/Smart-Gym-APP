@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="musculos">
+        <item>Pecho</item>
+        <item>Espalda</item>
+        <item>Biceps</item>
+        <item>Triceps</item>
+        <item>Abdomen</item>
+        <item>Pierna</item>
+    </string-array>
+
+</resources>

@@ -27,8 +27,8 @@ import java.util.Map;
 
 public class PreLoaderActivity extends AppCompatActivity {
 
-    private StringRequest request_get_objetivo1;
-    private RequestQueue queue_obj1;
+    private StringRequest request_peso, request_fuerza;
+    private RequestQueue queue;
     private Integer res;
     private String token, token_type, objetivo;
 
@@ -37,7 +37,7 @@ public class PreLoaderActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pre_loader);
 
-        queue_obj1 = Volley.newRequestQueue(getApplicationContext());
+        queue = Volley.newRequestQueue(getApplicationContext());
 
         ConexionSQLiteHelper conexion = new ConexionSQLiteHelper(getApplicationContext(), "usuarios", null, 4);
         SQLiteDatabase db = conexion.getWritableDatabase();
@@ -50,10 +50,6 @@ public class PreLoaderActivity extends AppCompatActivity {
             res = cursor.getCount();
 
             System.out.println("res: " + res);
-
-            boolean b = res > 0;
-
-            System.out.println("bool res "+ b);
 
             if(res > 0){
 
@@ -68,7 +64,8 @@ public class PreLoaderActivity extends AppCompatActivity {
                 db.close();
 
                 if(objetivo.equals("Perder peso")){
-                    request_get_objetivo1 = new StringRequest(Request.Method.GET, Config.GET_OBJETIVO_URL, new Response.Listener<String>() {
+
+                    request_peso = new StringRequest(Request.Method.GET, Config.GET_OBJ_PESO_URL, new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
 
@@ -144,9 +141,86 @@ public class PreLoaderActivity extends AppCompatActivity {
                         }
                     };
 
-                    queue_obj1.add(request_get_objetivo1);
+                    queue.add(request_peso);
 
 
+                } else if (objetivo.equals("Incrementar fuerza")){
+
+                    request_fuerza = new StringRequest(Request.Method.GET, Config.GET_OBJ_FUERZA_URL, new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            try {
+                                JSONArray respuesta = new JSONArray(response);
+                                Log.d("res_objetivo", respuesta.toString());
+
+                                if (respuesta.toString().equals("[]")) {
+
+                                    Toast.makeText(getApplicationContext(), "no hay datos", Toast.LENGTH_LONG).show();
+
+                                    startActivity(new Intent(PreLoaderActivity.this, PreFuerzaActivity.class));
+                                    PreLoaderActivity.this.finish();
+
+                                } else {
+                                    Intent i = new Intent(PreLoaderActivity.this, MainActivity.class);
+                                    startActivity(i);
+                                    PreLoaderActivity.this.finish();
+                                }
+
+                            } catch (JSONException e){
+                                e.printStackTrace();
+                            }
+
+                            try {
+                                JSONObject jsonObject = new JSONObject(response);
+
+                                //Log.e("RESPONSE_GYM", jsonObject.toString());
+
+                                if (jsonObject.has("status")){
+
+                                    String status = jsonObject.getString("status");
+
+                                    if (status.equals("Token is Expired")){
+
+                                        Toast.makeText(getApplicationContext(), "Token expirado. Favor de iniciar sesión nuevamente", Toast.LENGTH_LONG).show();
+                                        ConexionSQLiteHelper  conn = new ConexionSQLiteHelper(getApplicationContext(), "usuarios", null, 4);
+                                        SQLiteDatabase db = conn.getWritableDatabase();
+                                        db.execSQL("DELETE FROM usuarios");
+
+                                        startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                                        finish();
+
+                                    } else {
+
+
+                                    }
+
+                                }
+                            }catch (JSONException e) {
+                                Log.e("ERROR_JSON", e.toString());
+                            }
+
+                        }
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Log.e("err_res_objetivo", error.toString());
+
+                            if (error instanceof TimeoutError) {
+                                Toast.makeText(getApplicationContext(),
+                                        "Oops. Timeout error!",
+                                        Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    }){
+                        @Override
+                        public Map<String, String> getHeaders() throws AuthFailureError {
+                            HashMap<String, String> headers = new HashMap<>();
+                            headers.put("Authorization", token_type + " " + token);
+                            return headers;
+                        }
+                    };
+
+                    queue.add(request_fuerza);
                 }
 
                 //startActivity(new Intent(getApplicationContext(), MainActivity.class));

@@ -134,7 +134,7 @@ public class PrePerderPesoActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
 
-                    Toast.makeText(getApplicationContext(), "Chido !", Toast.LENGTH_LONG).show();
+
 
                     request_save_perder_peso = new JsonObjectRequest(Request.Method.POST, Config.POST_PERDER_PESO_URL, json_save, new Response.Listener<JSONObject>() {
                         @Override
@@ -167,7 +167,7 @@ public class PrePerderPesoActivity extends AppCompatActivity {
                                 String fecha_final = sf.format(caf.getTime());
 
                                 //se guardan los datos del usuario para bajar de peso en una base de datos
-                                ConexionSQLiteHelperPeso  conn = new ConexionSQLiteHelperPeso(getApplicationContext(), "objetivo_perder_peso", null, 2);
+                                ConexionSQLiteHelper  conn = new ConexionSQLiteHelper(getApplicationContext(), "objetivo_perder_peso", null, 4);
                                 SQLiteDatabase db = conn.getWritableDatabase();
 
                                 ContentValues datos = new ContentValues();
@@ -227,7 +227,7 @@ public class PrePerderPesoActivity extends AppCompatActivity {
                                             AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
                                             Log.d("alarma_avance", "alarma iniciada");
-                                            am.setRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), 7*1440*60000, pendingIntent);
+                                            am.setRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), (7*1440*60000)*2, pendingIntent);
                                         }
 
                                         break;
@@ -252,7 +252,7 @@ public class PrePerderPesoActivity extends AppCompatActivity {
                                             AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
                                             Log.d("alarma_avance", "alarma iniciada");
-                                            am.setRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), 7*1440*60000, pendingIntent);
+                                            am.setRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), (7*1440*60000)*2, pendingIntent);
                                         }
 
                                         break;

@@ -44,6 +44,7 @@ public class EditarPerfilActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(pager);
 
 
+
     }
 
 }

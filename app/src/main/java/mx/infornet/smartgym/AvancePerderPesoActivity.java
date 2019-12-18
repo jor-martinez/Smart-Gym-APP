@@ -70,6 +70,8 @@ public class AvancePerderPesoActivity extends AppCompatActivity {
                 token_type = cursor1.getString(cursor1.getColumnIndex("tokenType"));
             }
 
+            cursor1.close();
+
         }catch (Exception e){
 
             Toast toast = Toast.makeText(getApplicationContext(), "Error: "+  e.toString(), Toast.LENGTH_SHORT);
@@ -78,13 +80,12 @@ public class AvancePerderPesoActivity extends AppCompatActivity {
 
         db1.close();
 
-        ConexionSQLiteHelperPeso  con2 = new ConexionSQLiteHelperPeso(getApplicationContext(), "objetivo_perder_peso", null, 2);
+        ConexionSQLiteHelper  con2 = new ConexionSQLiteHelper(getApplicationContext(), "objetivo_perder_peso", null, 4);
         SQLiteDatabase dbp = con2.getWritableDatabase();
 
         try {
 
             String query = "SELECT * FROM objetivo_perder_peso where _ID=1";
-            //String imagenUsuario = null;
 
             Cursor cursor2 = dbp.rawQuery(query, null);
 
@@ -96,6 +97,7 @@ public class AvancePerderPesoActivity extends AppCompatActivity {
                 fecha_final = cursor2.getString(cursor2.getColumnIndex("fechaFinal"));
             }
 
+            cursor2.close();
         } catch (Exception e) {
 
             Toast toast = Toast.makeText(getApplicationContext(), "Error: " + e.toString(), Toast.LENGTH_SHORT);
@@ -162,7 +164,7 @@ public class AvancePerderPesoActivity extends AppCompatActivity {
 
                                 Toast.makeText(getApplicationContext(), mensj, Toast.LENGTH_LONG).show();
 
-                                ConexionSQLiteHelperPeso  con3 = new ConexionSQLiteHelperPeso(getApplicationContext(), "objetivo_perder_peso", null, 2);
+                                ConexionSQLiteHelper  con3 = new ConexionSQLiteHelper(getApplicationContext(), "objetivo_perder_peso", null, 4);
                                 SQLiteDatabase db3 = con3.getWritableDatabase();
 
                                 ContentValues data = new ContentValues();

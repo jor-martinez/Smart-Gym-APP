@@ -89,7 +89,7 @@ public class ProgresoPerderPesoActivity extends AppCompatActivity {
         barChart.invalidate();
 
         //saca el numero de registros para generar el array con el numero de semanas
-        ConexionSQLiteHelperPeso  conn = new ConexionSQLiteHelperPeso(getApplicationContext(), "objetivo_perder_peso", null, 2);
+        ConexionSQLiteHelper conn = new ConexionSQLiteHelper(getApplicationContext(), "objetivo_perder_peso", null, 4);
         SQLiteDatabase db = conn.getWritableDatabase();
 
         Cursor c = db.rawQuery("SELECT * FROM objetivo_perder_peso",null);
@@ -106,8 +106,6 @@ public class ProgresoPerderPesoActivity extends AppCompatActivity {
 
             XAxis xAxis = lineChart.getXAxis();
             xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-
-
 
 
             final String[] tiempo = new String[c.getCount()];
@@ -143,13 +141,14 @@ public class ProgresoPerderPesoActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Datos insuficientes", Toast.LENGTH_LONG).show();
         }
 
-
+        c.close();
+        db.close();
     }
 
     private ArrayList getDataBar(){
         ArrayList<BarEntry> entries = new ArrayList<>();
 
-        ConexionSQLiteHelperPeso  conn = new ConexionSQLiteHelperPeso(getApplicationContext(), "objetivo_perder_peso", null, 2);
+        ConexionSQLiteHelper conn = new ConexionSQLiteHelper(getApplicationContext(), "objetivo_perder_peso", null, 4);
         SQLiteDatabase db = conn.getWritableDatabase();
 
         try {
@@ -182,7 +181,6 @@ public class ProgresoPerderPesoActivity extends AppCompatActivity {
             Toast toast = Toast.makeText(getApplicationContext(), "Error: " + e.toString(), Toast.LENGTH_SHORT);
             toast.show();
         }
-
         db.close();
 
         return entries;
@@ -191,13 +189,12 @@ public class ProgresoPerderPesoActivity extends AppCompatActivity {
     private ArrayList getData(){
         ArrayList<Entry> entries = new ArrayList<>();
 
-        ConexionSQLiteHelperPeso  conn = new ConexionSQLiteHelperPeso(getApplicationContext(), "objetivo_perder_peso", null, 2);
+        ConexionSQLiteHelper conn = new ConexionSQLiteHelper(getApplicationContext(), "objetivo_perder_peso", null, 4);
         SQLiteDatabase db = conn.getWritableDatabase();
 
         try {
 
             String query = "SELECT * FROM objetivo_perder_peso";
-            //String imagenUsuario = null;
 
             Cursor cursor = db.rawQuery(query, null);
 

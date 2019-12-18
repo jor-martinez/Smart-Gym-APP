@@ -149,7 +149,7 @@ public class RutinasActivity extends AppCompatActivity{
 
                     //Log.d("RESPONSE", array.toString());
 
-                    if (array.toString().equals("[null]")){
+                    if (array.toString().equals("[]")){
                         error.setVisibility(View.VISIBLE);
                         error.setText(R.string.errorrutinas);
                     } else{

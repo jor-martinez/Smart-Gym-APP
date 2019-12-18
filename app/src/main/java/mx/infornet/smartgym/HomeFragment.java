@@ -133,6 +133,8 @@ public class HomeFragment extends Fragment {
 
                 if (objetivo.equals("Perder peso")){
                     startActivity(new Intent(getContext(), ProgresoPerderPesoActivity.class));
+                } else  if (objetivo.equals("Incrementar fuerza")){
+                    startActivity(new Intent(getContext(), AvanceFuerzaActivity.class));
                 }
 
             }

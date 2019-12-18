@@ -18,11 +18,34 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".PreMasaMuscularActivity"></activity>
-        <activity android:name=".PreLoaderActivity" />
-        <activity android:name=".PrePerderPesoActivity" />
+        <activity
+            android:name=".ProgresoFuerzaActivity"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+        <activity
+            android:name=".AvanceFuerzaActivity"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+        <activity
+            android:name=".PreFuerzaActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".PreLoaderActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".PrePerderPesoActivity"
+            android:screenOrientation="portrait" />
         <activity android:name=".ProgresoPerderPesoActivity" />
-        <activity android:name=".AvancePerderPesoActivity" />
+        <activity
+            android:name=".AvancePerderPesoActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ReportarActivity"
             android:parentActivityName=".MainActivity"

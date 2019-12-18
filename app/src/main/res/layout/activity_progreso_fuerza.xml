@@ -4,19 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ProgresoPerderPesoActivity">
+    tools:context=".ProgresoFuerzaActivity">
 
     <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbar_prog_peso"
         android:layout_width="match_parent"
         android:layout_height="?android:attr/actionBarSize"
-        android:layout_alignParentTop="true"
-        android:background="@color/colorPrimary" />
+        android:id="@+id/toolbar_prog_fuerza"
+        android:background="@color/colorPrimary"/>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/toolbar_prog_peso">
+        android:layout_below="@id/toolbar_prog_fuerza">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -25,16 +24,11 @@
             android:padding="20dp">
 
             <com.github.mikephil.charting.charts.LineChart
-                android:id="@+id/chart_peso"
+                android:id="@+id/linechart_fuerza"
                 android:layout_width="match_parent"
                 android:layout_height="400dp" />
-
-            <com.github.mikephil.charting.charts.BarChart
-                android:id="@+id/barchart_peso"
-                android:layout_width="match_parent"
-                android:layout_height="400dp" />
-
         </LinearLayout>
     </ScrollView>
+
 
 </RelativeLayout>

@@ -3,11 +3,8 @@ package mx.infornet.smartgym;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.ContentValues;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -44,8 +41,8 @@ public class LoginActivity extends AppCompatActivity {
 
     private TextInputEditText te_correo, te_password;
     private MaterialButton button_login;
-    private RequestQueue queue, queue_obj;
-    private StringRequest request, request_get_objetivo;
+    private RequestQueue queue, queue_obj, queue_fuerza;
+    private StringRequest request, request_get_objetivo, request_fuerza;
     private ProgressBar progressBar;
     private TextView forget_pass;
 
@@ -69,7 +66,7 @@ public class LoginActivity extends AppCompatActivity {
 
         queue = Volley.newRequestQueue(getApplicationContext());
         queue_obj = Volley.newRequestQueue(getApplicationContext());
-
+        queue_fuerza = Volley.newRequestQueue(getApplicationContext());
 
         forget_pass.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -175,7 +172,8 @@ public class LoginActivity extends AppCompatActivity {
                                     Toast.makeText(getApplicationContext(), mensaje, Toast.LENGTH_LONG).show();
 
                                     if(postObjetivo.equals("Perder peso")){
-                                        request_get_objetivo = new StringRequest(Request.Method.GET, Config.GET_OBJETIVO_URL, new Response.Listener<String>() {
+
+                                        request_get_objetivo = new StringRequest(Request.Method.GET, Config.GET_OBJ_PESO_URL, new Response.Listener<String>() {
                                             @Override
                                             public void onResponse(String response) {
 
@@ -216,6 +214,55 @@ public class LoginActivity extends AppCompatActivity {
 
                                         queue_obj.add(request_get_objetivo);
 
+
+                                    } else if (postObjetivo.equals("Incrementar fuerza")){
+
+                                        request_fuerza = new StringRequest(Request.Method.GET, Config.GET_OBJ_FUERZA_URL, new Response.Listener<String>() {
+                                            @Override
+                                            public void onResponse(String response) {
+                                                try {
+                                                    JSONArray respuesta = new JSONArray(response);
+                                                    Log.d("res_objetivo", respuesta.toString());
+
+                                                    if (respuesta.toString().equals("[]")) {
+
+                                                        Toast.makeText(getApplicationContext(), "no hay datos", Toast.LENGTH_LONG).show();
+
+                                                        startActivity(new Intent(LoginActivity.this, PreFuerzaActivity.class));
+                                                        LoginActivity.this.finish();
+
+                                                    } else {
+                                                        Intent i = new Intent(LoginActivity.this, MainActivity.class);
+                                                        startActivity(i);
+                                                        LoginActivity.this.finish();
+                                                    }
+
+                                                } catch (JSONException e){
+                                                    e.printStackTrace();
+                                                }
+
+                                            }
+                                        }, new Response.ErrorListener() {
+                                            @Override
+                                            public void onErrorResponse(VolleyError error) {
+                                                Log.e("err_res_objetivo", error.toString());
+
+                                                if (error instanceof TimeoutError) {
+                                                    Toast.makeText(getApplicationContext(),
+                                                            "Oops. Timeout error!",
+                                                            Toast.LENGTH_LONG).show();
+                                                }
+                                            }
+                                        }){
+                                            @Override
+                                            public Map<String, String> getHeaders() throws AuthFailureError {
+                                                HashMap<String, String> headers = new HashMap<>();
+                                                headers.put("Authorization", tokenType + " " + postToken);
+                                                return headers;
+                                            }
+                                        };
+
+                                        queue_fuerza.add(request_fuerza);
 
                                     }
 
@@ -294,7 +341,7 @@ public class LoginActivity extends AppCompatActivity {
                                     }
 
                                 }catch (JSONException e){
-
+                                    e.printStackTrace();
                                 }
                             }
                         }

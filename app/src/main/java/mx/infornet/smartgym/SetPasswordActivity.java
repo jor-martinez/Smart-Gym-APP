@@ -15,6 +15,7 @@ import android.view.Window;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -38,7 +39,7 @@ public class SetPasswordActivity extends AppCompatActivity {
     private TextInputEditText password, password_confirm;
     private MaterialButton bt_set;
     private ProgressBar progressBar;
-    private StringRequest request;
+    private StringRequest request, request_obj, request_fuerza;
     private RequestQueue queue;
 
     @Override
@@ -103,8 +104,8 @@ public class SetPasswordActivity extends AppCompatActivity {
                                 } else if(jsonObject.has("status")){
 
                                     String status = jsonObject.getString("status");
-                                    String postToken = jsonObject.getString("access_token");
-                                    String tokenType = jsonObject.getString("token_type");
+                                    final String postToken = jsonObject.getString("access_token");
+                                    final String tokenType = jsonObject.getString("token_type");
                                     String tokenExpire = jsonObject.getString("expires_in");
                                     JSONObject usuario = jsonObject.getJSONObject("usuario");
 
@@ -158,13 +159,101 @@ public class SetPasswordActivity extends AppCompatActivity {
 
                                         Toast.makeText(getApplicationContext(), mensaje, Toast.LENGTH_LONG).show();
 
-                                        Intent i = new Intent(SetPasswordActivity.this, MainActivity.class);
-                                        startActivity(i);
-                                        SetPasswordActivity.this.finish();
+                                        if (postObjetivo.equals("Perder peso")){
+                                            request_obj = new StringRequest(Request.Method.GET, Config.GET_OBJ_PESO_URL, new Response.Listener<String>() {
+                                                @Override
+                                                public void onResponse(String response) {
 
-                                        //email.setText("");
-                                        //password.setText("");
-                                        //password_confirm.setText("");
+                                                    try {
+                                                        JSONArray respuesta = new JSONArray(response);
+                                                        Log.d("res_objetivo", respuesta.toString());
+
+                                                        if (respuesta.toString().equals("[]")) {
+
+                                                            //Toast.makeText(getApplicationContext(), "no hay datos", Toast.LENGTH_LONG).show();
+
+                                                            startActivity(new Intent(SetPasswordActivity.this, PrePerderPesoActivity.class));
+                                                            SetPasswordActivity.this.finish();
+
+                                                        } else {
+                                                            Intent i = new Intent(SetPasswordActivity.this, MainActivity.class);
+                                                            startActivity(i);
+                                                            SetPasswordActivity.this.finish();
+                                                        }
+
+                                                    } catch (JSONException e) {
+                                                        e.printStackTrace();
+                                                    }
+                                                }
+                                            }, new Response.ErrorListener() {
+                                                @Override
+                                                public void onErrorResponse(VolleyError error) {
+                                                    Log.e("err_res_objetivo", error.toString());
+                                                }
+                                            }) {
+                                                @Override
+                                                public Map<String, String> getHeaders() throws AuthFailureError {
+                                                    HashMap<String, String> headers = new HashMap<>();
+                                                    headers.put("Authorization", tokenType + " " + postToken);
+                                                    return headers;
+                                                }
+                                            };
+
+                                            queue.add(request_obj);
+
+                                        } else if (postObjetivo.equals("Incrementar fuerza")){
+                                            request_fuerza = new StringRequest(Request.Method.GET, Config.GET_OBJ_FUERZA_URL, new Response.Listener<String>() {
+                                                @Override
+                                                public void onResponse(String response) {
+                                                    try {
+                                                        JSONArray respuesta = new JSONArray(response);
+                                                        Log.d("res_objetivo", respuesta.toString());
+
+                                                        if (respuesta.toString().equals("[]")) {
+
+                                                            Toast.makeText(getApplicationContext(), "no hay datos", Toast.LENGTH_LONG).show();
+
+                                                            startActivity(new Intent(SetPasswordActivity.this, PreFuerzaActivity.class));
+                                                            SetPasswordActivity.this.finish();
+
+                                                        } else {
+                                                            Intent i = new Intent(SetPasswordActivity.this, MainActivity.class);
+                                                            startActivity(i);
+                                                            SetPasswordActivity.this.finish();
+                                                        }
+
+                                                    } catch (JSONException e){
+                                                        e.printStackTrace();
+                                                    }
+
+                                                }
+                                            }, new Response.ErrorListener() {
+                                                @Override
+                                                public void onErrorResponse(VolleyError error) {
+                                                    Log.e("err_res_objetivo", error.toString());
+
+                                                    if (error instanceof TimeoutError) {
+                                                        Toast.makeText(getApplicationContext(),
+                                                                "Oops. Timeout error!",
+                                                                Toast.LENGTH_LONG).show();
+                                                    }
+                                                }
+                                            }){
+                                                @Override
+                                                public Map<String, String> getHeaders() throws AuthFailureError {
+                                                    HashMap<String, String> headers = new HashMap<>();
+                                                    headers.put("Authorization", tokenType + " " + postToken);
+                                                    return headers;
+                                                }
+                                            };
+
+                                            queue.add(request_fuerza);
+                                        }
+
+                                        /*Intent i = new Intent(SetPasswordActivity.this, MainActivity.class);
+                                        startActivity(i);
+                                        SetPasswordActivity.this.finish();*/
+
 
                                     } else if (status.equals("401")) {
                                         String error = jsonObject.getString("message");
@@ -172,10 +261,10 @@ public class SetPasswordActivity extends AppCompatActivity {
                                     }
                                 }
 
-                                Intent i = new Intent(SetPasswordActivity.this, LoginActivity.class);
+                                /*Intent i = new Intent(SetPasswordActivity.this, LoginActivity.class);
                                 startActivity(i);
 
-                                finish();
+                                finish();*/
 
                             } catch (JSONException e){
                                 e.printStackTrace();

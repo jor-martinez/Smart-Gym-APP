@@ -7,4 +7,10 @@
     <color name="mtrl_textinput_default_box_stroke_color">#FFF</color>
 
     <color name="usuario_activo">#76ff03</color>
+
+    <color name="rojomaterial">#e74c3c</color>
+    <color name="azulmaterial">#3498db</color>
+    <color name="verdematerial">#2ecc71</color>
+    <color name="amarillomaterial">#f1c40f</color>
+    <color name="naranjamaterial">#ff6a00</color>
 </resources>
