@@ -145,6 +145,7 @@ public class AvanceFuerzaActivity extends AppCompatActivity {
                     try {
                         params_fuerza.put("peso_levantado", peso_decimal);
                         params_fuerza.put("repeticiones", repeticiones_int);
+                        params_fuerza.put("musculo", musculo);
                     } catch (JSONException e){
                         e.printStackTrace();
                     }

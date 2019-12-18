@@ -42,59 +42,13 @@ public class ProgresoPerderPesoActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        //grafica de barras IMC
-
-        BarChart barChart = findViewById(R.id.barchart_peso);
-        BarDataSet barDataSet = new BarDataSet(getDataBar(), "Indice de masa corporal");
-        barDataSet.setBarBorderWidth(0.9f);
-        barDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
-        BarData barData = new BarData(barDataSet);
-
-        LimitLine ll1 = new LimitLine(18.5f, "normal");
-        ll1.setLineWidth(4f);
-        ll1.enableDashedLine(10f, 10f, 0f);
-        ll1.setLabelPosition(LimitLine.LimitLabelPosition.RIGHT_TOP);
-        ll1.setTextSize(10f);
-        LimitLine ll2 = new LimitLine(25.0f, "Peso superior al normal");
-        ll2.setLineWidth(4f);
-        ll2.enableDashedLine(10f, 10f, 0f);
-        ll2.setLabelPosition(LimitLine.LimitLabelPosition.RIGHT_TOP);
-        ll2.setTextSize(10f);
-        LimitLine ll3 = new LimitLine(30.0f, "Obesidad");
-        ll3.setLineWidth(4f);
-        ll3.enableDashedLine(10f, 10f, 0f);
-        ll3.setLabelPosition(LimitLine.LimitLabelPosition.RIGHT_TOP);
-        ll3.setTextSize(10f);
-
-        YAxis leftAxis = barChart.getAxisLeft();
-        leftAxis.setAxisMinimum(10f);
-        leftAxis.setAxisMaximum(45f);
-        leftAxis.removeAllLimitLines();
-        leftAxis.addLimitLine(ll1);
-        leftAxis.addLimitLine(ll2);
-        leftAxis.addLimitLine(ll3);
-
-        YAxis yAxisRightb = barChart.getAxisRight();
-        yAxisRightb.setEnabled(false);
-
-        XAxis xAxisb = barChart.getXAxis();
-        xAxisb.setPosition(XAxis.XAxisPosition.BOTTOM);
-        final String[] prog = new String[]{"Inicio", "Fin"};
-        IndexAxisValueFormatter formatterb = new IndexAxisValueFormatter(prog);
-        xAxisb.setGranularity(1f);
-        xAxisb.setValueFormatter(formatterb);
-        barChart.setData(barData);
-        barChart.setFitBars(true);
-        barChart.animateXY(5000, 5000);
-        barChart.invalidate();
-
         //saca el numero de registros para generar el array con el numero de semanas
         ConexionSQLiteHelper conn = new ConexionSQLiteHelper(getApplicationContext(), "objetivo_perder_peso", null, 4);
         SQLiteDatabase db = conn.getWritableDatabase();
 
         Cursor c = db.rawQuery("SELECT * FROM objetivo_perder_peso",null);
 
-        if (c.getCount() > 1){
+        if (c.getCount() > 0){
 
             //grafica de puntos, progreso peso
             LineChart lineChart = findViewById(R.id.chart_peso);
@@ -135,6 +89,53 @@ public class ProgresoPerderPesoActivity extends AppCompatActivity {
             lineChart.setData(data);
             lineChart.animateX(3500);
             lineChart.invalidate();
+
+
+            //Grafica de barras para ver el IMC
+
+            BarChart barChart = findViewById(R.id.barchart_peso);
+            BarDataSet barDataSet = new BarDataSet(getDataBar(), "Indice de masa corporal");
+            barDataSet.setBarBorderWidth(0.9f);
+            barDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
+            BarData barData = new BarData(barDataSet);
+
+            LimitLine ll1 = new LimitLine(18.5f, "normal");
+            ll1.setLineWidth(4f);
+            ll1.enableDashedLine(10f, 10f, 0f);
+            ll1.setLabelPosition(LimitLine.LimitLabelPosition.RIGHT_TOP);
+            ll1.setTextSize(10f);
+            LimitLine ll2 = new LimitLine(25.0f, "Peso superior al normal");
+            ll2.setLineWidth(4f);
+            ll2.enableDashedLine(10f, 10f, 0f);
+            ll2.setLabelPosition(LimitLine.LimitLabelPosition.RIGHT_TOP);
+            ll2.setTextSize(10f);
+            LimitLine ll3 = new LimitLine(30.0f, "Obesidad");
+            ll3.setLineWidth(4f);
+            ll3.enableDashedLine(10f, 10f, 0f);
+            ll3.setLabelPosition(LimitLine.LimitLabelPosition.RIGHT_TOP);
+            ll3.setTextSize(10f);
+
+            YAxis leftAxis = barChart.getAxisLeft();
+            leftAxis.setAxisMinimum(10f);
+            leftAxis.setAxisMaximum(45f);
+            leftAxis.removeAllLimitLines();
+            leftAxis.addLimitLine(ll1);
+            leftAxis.addLimitLine(ll2);
+            leftAxis.addLimitLine(ll3);
+
+            YAxis yAxisRightb = barChart.getAxisRight();
+            yAxisRightb.setEnabled(false);
+
+            XAxis xAxisb = barChart.getXAxis();
+            xAxisb.setPosition(XAxis.XAxisPosition.BOTTOM);
+            final String[] prog = new String[]{"Inicio", "Fin"};
+            IndexAxisValueFormatter formatterb = new IndexAxisValueFormatter(prog);
+            xAxisb.setGranularity(1f);
+            xAxisb.setValueFormatter(formatterb);
+            barChart.setData(barData);
+            barChart.setFitBars(true);
+            barChart.animateXY(5000, 5000);
+            barChart.invalidate();
 
 
         } else {

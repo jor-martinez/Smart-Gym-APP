@@ -16,7 +16,9 @@ public class Config {
 
     public static final String EDIT_PASSWORD_URL = "https://smartgym.infornet.mx/api/miembro/password/update";
 
-    public static final String RUTINAS_GYM_URL = "https://smartgym.infornet.mx/api/miembro/rutinas";
+    public static final String RUTINAS_PAGINATION_GYM_URL = "https://smartgym.infornet.mx/api/miembro/rutinas";
+
+    public static final String RUTINAS_GYM_URL = "https://smartgym.infornet.mx/api/miembro/rutinas?page=";
 
     public static final String GET_INFO_GYM_URL = "https://smartgym.infornet.mx/api/miembro/gimnasio";
 

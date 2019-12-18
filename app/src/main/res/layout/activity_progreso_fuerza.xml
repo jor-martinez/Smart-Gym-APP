@@ -23,10 +23,22 @@
             android:orientation="vertical"
             android:padding="20dp">
 
+            <TextView
+                android:id="@+id/textView23"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:gravity="center"
+                android:text="@string/info1_progreso_fuerza"
+                android:textColor="@color/colorSecundary" />
+
             <com.github.mikephil.charting.charts.LineChart
                 android:id="@+id/linechart_fuerza"
                 android:layout_width="match_parent"
-                android:layout_height="400dp" />
+                android:layout_height="400dp" >
+
+            </com.github.mikephil.charting.charts.LineChart>
         </LinearLayout>
     </ScrollView>
 

@@ -19,7 +19,7 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:contentDescription="@string/app_name"
-            android:padding="5dp"
+            android:padding="10dp"
             app:srcCompat="@mipmap/arrow_back_white" />
 
         <TextView
@@ -57,10 +57,54 @@
             android:indeterminate="true"
             android:indeterminateTint="@color/colorPrimary" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view_lista_rutinas"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:background="@color/colorPrimary"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/anterior_lista_rutinas"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="20dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/pagina_anterior"
+                    android:textSize="10sp" />
+
+                <TextView
+                    android:id="@+id/tv_current_pag_lista_rutinas"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="@string/numero_pagina"
+                    android:textSize="18sp" />
+
+                <Button
+                    android:id="@+id/siguiente_lista_rutinas"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="20dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/pagina_siguiente"
+                    android:textSize="10sp" />
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view_lista_rutinas"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
+
+
 
     </RelativeLayout>
 

@@ -21,7 +21,7 @@
             android:layout_height="50dp"
             android:layout_alignParentEnd="true"
             android:contentDescription="@string/app_name"
-            android:padding="5dp"
+            android:padding="10dp"
             app:srcCompat="@mipmap/add_icon_white" />
 
         <ImageView
@@ -31,7 +31,7 @@
             android:clickable="true"
             android:contentDescription="@string/app_name"
             android:focusable="true"
-            android:padding="5dp"
+            android:padding="10dp"
             app:srcCompat="@mipmap/arrow_back_white" />
 
         <TextView

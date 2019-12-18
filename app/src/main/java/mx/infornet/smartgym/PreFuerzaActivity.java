@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -28,6 +29,7 @@ import com.android.volley.toolbox.Volley;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -78,6 +80,8 @@ public class PreFuerzaActivity extends AppCompatActivity {
         }
         db.close();
 
+        Log.d("token", token);
+
         peso = findViewById(R.id.peso_ini_levantado);
         repeticiones = findViewById(R.id.repeticiones_ini);
         musculos = findViewById(R.id.sp_musculos);
@@ -119,6 +123,7 @@ public class PreFuerzaActivity extends AppCompatActivity {
                     try {
                         params_masa.put("peso_levantado", peso_decimal);
                         params_masa.put("repeticiones", repeticiones_int);
+                        params_masa.put("musculo", musculo);
                     } catch (JSONException e){
                         e.printStackTrace();
                     }
@@ -182,6 +187,50 @@ public class PreFuerzaActivity extends AppCompatActivity {
                                 Toast.makeText(getApplicationContext(),
                                         "Oops. Timeout error!",
                                         Toast.LENGTH_LONG).show();
+                            }
+
+                            NetworkResponse networkResponse = error.networkResponse;
+
+                            if(networkResponse != null && networkResponse.data != null){
+                                String jsonError = new String(networkResponse.data);
+                                try {
+                                    JSONObject jsonObjectError = new JSONObject(jsonError);
+                                    Log.e("error_logn", jsonObjectError.toString());
+
+                                    if (jsonObjectError.has("message")){
+                                        String err = jsonObjectError.getString("message");
+                                        if (err.equals("The given data was invalid.")){
+                                            JSONObject errors = jsonObjectError.getJSONObject("errors");
+
+                                            if (errors.has("peso_levantado")){
+
+                                                JSONArray err_peso = errors.getJSONArray("peso_levantado");
+
+                                                StringBuilder stringBuilder = new StringBuilder();
+
+                                                for (int i=0; i<err_peso.length(); i++){
+                                                    String valor = err_peso.getString(i);
+                                                    stringBuilder.append(valor+"\n");
+                                                }
+                                                peso.setError(stringBuilder, null);
+                                                peso.requestFocus();
+                                            } else if (errors.has("repeticiones")){
+                                                JSONArray err_repet = errors.getJSONArray("repeticiones");
+                                                StringBuilder stringBuilder = new StringBuilder();
+
+                                                for (int i=0; i<err_repet.length(); i++){
+                                                    String valor = err_repet.getString(i);
+                                                    stringBuilder.append(valor+"\n");
+                                                }
+                                                repeticiones.setError(stringBuilder, null);
+                                                repeticiones.requestFocus();
+                                            }
+                                        }
+                                    }
+
+                                }catch (JSONException e){
+                                    e.printStackTrace();
+                                }
                             }
                         }
                     }){

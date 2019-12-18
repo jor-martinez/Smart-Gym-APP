@@ -205,6 +205,7 @@ public class AvancePerderPesoActivity extends AppCompatActivity {
                                 try {
                                     JSONObject jsonObjectError = new JSONObject(jsonError);
                                     Log.e("error_logn", jsonObjectError.toString());
+
                                 }catch (JSONException e){
 
                                 }

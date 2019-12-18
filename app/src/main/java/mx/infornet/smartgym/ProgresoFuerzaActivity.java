@@ -53,7 +53,7 @@ public class ProgresoFuerzaActivity extends AppCompatActivity {
 
             XAxis xAxis = lineChart.getXAxis();
             xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-            xAxis.setGranularity(5f);
+            xAxis.setGranularity(1f);
 
             Cursor cp = db.rawQuery("SELECT * FROM objetivo_fuerza WHERE musculo = ?", new String[]{"Pecho"});
 
@@ -99,20 +99,25 @@ public class ProgresoFuerzaActivity extends AppCompatActivity {
 
                 final String[] tiempo = new String[ce.getCount()];
 
-                for(ce.moveToFirst(); !ce.isAfterLast(); ce.moveToNext()) {
-                    tiempo[ce.getPosition()] = ce.getString(ce.getColumnIndex("fecha"));
-                    System.out.println(tiempo[ce.getPosition()]);
+                for (int i=0; i<tiempo.length;i++){
+                    tiempo[i] = "Registro "+ i;
+                    System.out.println(tiempo[i]);
                 }
+
+                /*for(ce.moveToFirst(); !ce.isAfterLast(); ce.moveToNext()) {
+                    tiempo[ce.getPosition()] = ce.getString(ce.getColumnIndex("fecha"));
+                    System.out.println(tiempo[ce.getPosition()] + " " + ce.getPosition());
+                }*/
 
                 ValueFormatter formatter = new ValueFormatter(){
                     @Override
                     public String getAxisLabel(float value, AxisBase axis) {
-                        return tiempo[(int) value];
+                        return tiempo[(int)value];
                     }
                 };
 
 
-                xAxis.setValueFormatter(formatter);
+                //xAxis.setValueFormatter(formatter);
 
                 dataSets.add(dataSet);
 
@@ -247,7 +252,7 @@ public class ProgresoFuerzaActivity extends AppCompatActivity {
 
             YAxis yAxisLeft = lineChart.getAxisLeft();
             yAxisLeft.setGranularity(5f);
-            //yAxisLeft.setAxisMinimum(20f);
+            yAxisLeft.setAxisMinimum(20f);
             //yAxisLeft.setAxisMaximum(100f);
 
             LineData data = new LineData(dataSets);

@@ -18,7 +18,7 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:contentDescription="@string/app_name"
-            android:padding="5dp"
+            android:padding="10dp"
             app:srcCompat="@mipmap/arrow_back_white" />
 
         <TextView

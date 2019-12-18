@@ -17,7 +17,7 @@
             android:id="@+id/btn_back_rutina_miembro"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:padding="5dp"
+            android:padding="10dp"
             app:srcCompat="@mipmap/arrow_back_white" />
 
         <TextView

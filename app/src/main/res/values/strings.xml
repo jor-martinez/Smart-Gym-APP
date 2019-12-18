@@ -96,4 +96,8 @@
     <string name="fuerza_del_primer_registro">Fuerza del primer registro</string>
     <string name="info1_avance_fuerza">Registra tu avances en esta pantalla, puedes agregar los registros que gustes antes de la fecha limite</string>
     <string name="info2_avance_fuerza">Puedes acceder en el botón de abajo, para consultar tus avances</string>
+    <string name="pagina_anterior"><![CDATA[< Anterior]]></string>
+    <string name="numero_pagina">pagina</string>
+    <string name="pagina_siguiente"><![CDATA[Siguiente >]]></string>
+    <string name="info1_progreso_fuerza">En esta sección puedes ver el progreso que has tenido, a través de la gráfica</string>
 </resources>
