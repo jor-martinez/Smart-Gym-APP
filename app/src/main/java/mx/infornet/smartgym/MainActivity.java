@@ -39,6 +39,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -73,16 +74,13 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, SensorEventListener {
 
     private Context context = this;
-    private Dialog dialog, dialog_report;
-    private List<Frases> frasesList;
-    private ParseJson parseJson;
+    private Dialog dialog_report;
     private SensorManager sensorManager;
     private Sensor sensor;
-    private StringRequest request, request_get_objetivo;
-    private JsonObjectRequest request_save_perder_peso;
-    private RequestQueue queue, queue_obj, queue_save_perder_peso;
-    private String objetivo, token, token_type, fecha_termino="01/01/1999";
-    private Calendar calendar, calendar1;
+    private StringRequest request, request_pago;
+    private RequestQueue queue, queue_pago;
+    private String objetivo, token, token_type, fecha_termino="01/01/1999", fecha_fin="01/01/1999";
+    private long dias;
     static long despues;
 
     private int ID_PENDING = 1, ID_PENDING_AVANCE = 2;
@@ -102,7 +100,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
 
-        dialog = new Dialog(context);
         dialog_report = new Dialog(context);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -124,19 +121,101 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
 
         queue = Volley.newRequestQueue(getApplicationContext());
-        queue_obj = Volley.newRequestQueue(getApplicationContext());
-        queue_save_perder_peso = Volley.newRequestQueue(getApplicationContext());
+        //queue_obj = Volley.newRequestQueue(getApplicationContext());
+        //queue_save_perder_peso = Volley.newRequestQueue(getApplicationContext());
+        queue_pago = Volley.newRequestQueue(getApplicationContext());
 
 
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        Date fecha_final = new Date();
+        ConexionSQLiteHelper  conn = new ConexionSQLiteHelper(getApplicationContext(), "usuarios", null, 4);
+        SQLiteDatabase db = conn.getWritableDatabase();
+
         try {
-            fecha_final = sdf.parse("10/12/2019");
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
 
-        long dias = getDiasRestantes(new Date(), fecha_final ) + 1;
+            String query = "SELECT * FROM usuarios";
+
+            Cursor cursor = db.rawQuery(query, null);
+
+            for(cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+                token = cursor.getString(cursor.getColumnIndex("token"));
+                token_type = cursor.getString(cursor.getColumnIndex("tokenType"));
+                objetivo = cursor.getString(cursor.getColumnIndex("objetivo"));
+            }
+
+            cursor.close();
+
+        }catch (Exception e){
+
+            Toast toast = Toast.makeText(getApplicationContext(), "Error: "+  e.toString(), Toast.LENGTH_SHORT);
+            toast.show();
+        }
+        db.close();
+
+        Log.d("token", token);
+
+        request_pago = new StringRequest(Request.Method.GET, Config.GET_PAGO_CURRENT_URL, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+
+                    Log.d("RES_PAGO", jsonObject.toString());
+
+                    fecha_fin = jsonObject.getString("fecha_fin");
+
+                    SimpleDateFormat input = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+
+                    Date fecha_final = new Date();
+                    try {
+                        fecha_final = input.parse(fecha_fin);
+                    } catch (ParseException e){
+                        e.printStackTrace();
+                    }
+
+                    dias = getDiasRestantes(new Date(), fecha_final ) + 1;
+
+
+                } catch (JSONException e){
+                    e.printStackTrace();
+                }
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                if (error instanceof TimeoutError) {
+                    Toast.makeText(getApplicationContext(),
+                            "Oops. Timeout error!",
+                            Toast.LENGTH_LONG).show();
+                }
+
+                NetworkResponse networkResponse = error.networkResponse;
+
+                if(networkResponse != null && networkResponse.data != null){
+                    String jsonError = new String(networkResponse.data);
+                    try {
+                        JSONObject jsonObjectError = new JSONObject(jsonError);
+                        Log.e("error_pago", jsonObjectError.toString());
+
+
+                    }catch (JSONException e){
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+        }){
+            @Override
+            public Map<String, String> getHeaders()throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<>();
+                headers.put("Authorization", token_type+" "+token);
+                return headers;
+            }
+        };
+
+        queue_pago.add(request_pago);
+
 
         if (dias <= 5 && dias > 0){
 
@@ -162,30 +241,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             am.cancel(pendingIntent);
             Log.d("alarma", "alarma cancelada");
         }
-
-        ConexionSQLiteHelper  conn = new ConexionSQLiteHelper(getApplicationContext(), "usuarios", null, 4);
-        SQLiteDatabase db = conn.getWritableDatabase();
-
-        try {
-
-            String query = "SELECT * FROM usuarios";
-
-            Cursor cursor = db.rawQuery(query, null);
-
-            for(cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
-                token = cursor.getString(cursor.getColumnIndex("token"));
-                token_type = cursor.getString(cursor.getColumnIndex("tokenType"));
-                objetivo = cursor.getString(cursor.getColumnIndex("objetivo"));
-            }
-
-            cursor.close();
-
-        }catch (Exception e){
-
-            Toast toast = Toast.makeText(getApplicationContext(), "Error: "+  e.toString(), Toast.LENGTH_SHORT);
-            toast.show();
-        }
-        db.close();
 
         if (objetivo.equals("Perder peso")){
             ConexionSQLiteHelper conexion = new ConexionSQLiteHelper(getApplicationContext(), "objetivo_perder_peso", null, 4);
@@ -234,6 +289,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             if (hoy >= despues) {
 
+
+
                 Intent in = new Intent(getApplicationContext(), BroadcastAvancePerderPeso.class);
                 PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), ID_PENDING_AVANCE, in, PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -245,6 +302,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 //Tambien se borraría la tabla del objetivo perder peso
             }
+
+
         } else if (objetivo.equals("Incrementar fuerza")){
 
             ConexionSQLiteHelper conexion = new ConexionSQLiteHelper(getApplicationContext(), "objetivo_fuerza", null, 4);
@@ -302,15 +361,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
 
         }
-
-
-
-        new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        ShowFrase();
-                    }
-                }, 3000);
 
         //prueba info de perder peso, despues se eliminará
         //ShowOkPerderPeso(70.5, 10, 3);
@@ -459,54 +509,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    public void ShowFrase(){
-        TextView la_frase, el_autor;
-        ImageButton cerrar_frase;
-
-        dialog.setContentView(R.layout.popup_frase);
-
-        cerrar_frase = dialog.findViewById(R.id.btn_close_popup);
-        la_frase = dialog.findViewById(R.id.frase);
-        el_autor = dialog.findViewById(R.id.autor_frase);
-
-        cerrar_frase.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
-
-        InputStream is = getResources().openRawResource(R.raw.frases_motivadoras);
-
-        try {
-            parseJson = new ParseJson();
-            frasesList = parseJson.readJsonStream(is);
-            System.out.println("Lectura json terminada");
-        } catch (IOException e){
-            e.printStackTrace();
-        }
-
-        int numRandom = (int) (Math.random() * frasesList.size() + 1);
-
-        for (Frases frase : frasesList){
-            int id_frase = frase.getId();
-
-            if (id_frase == numRandom){
-                String frase_json = frase.getFrase();
-                String autor_json = frase.getAutor();
-
-                la_frase.setText(frase_json);
-                el_autor.setText(autor_json);
-            }
-        }
-
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialog.setCancelable(false);
-        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
-        dialog.show();
-
-    }
-
     public void ShowReport(){
 
         ImageButton cerrar_rep;
@@ -620,8 +622,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private long getDiasRestantes(Date fecha_inicial, Date fecha_final){
         long diferencia = fecha_final.getTime() - fecha_inicial.getTime();
 
-        //Log.i("MainActivity", "fechaInicial : " + fecha_inicial);
-        //Log.i("MainActivity", "fechaFinal : " + fecha_final);
+        Log.i("MainActivity", "fechaInicial : " + fecha_inicial);
+        Log.i("MainActivity", "fechaFinal : " + fecha_final);
 
         long segsMilli = 1000;
         long minsMilli = segsMilli * 60;
@@ -631,13 +633,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         long diasTranscurridos = diferencia / diasMilli;
         diferencia = diferencia % diasMilli;
 
-        long horasTranscurridos = diferencia / horasMilli;
+        /*long horasTranscurridos = diferencia / horasMilli;
         diferencia = diferencia % horasMilli;
 
         long minutosTranscurridos = diferencia / minsMilli;
         diferencia = diferencia % minsMilli;
 
-        long segsTranscurridos = diferencia / segsMilli;
+        long segsTranscurridos = diferencia / segsMilli;*/
 
         return diasTranscurridos;
     }

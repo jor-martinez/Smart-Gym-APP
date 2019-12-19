@@ -100,4 +100,6 @@
     <string name="numero_pagina">pagina</string>
     <string name="pagina_siguiente"><![CDATA[Siguiente >]]></string>
     <string name="info1_progreso_fuerza">En esta sección puedes ver el progreso que has tenido, a través de la gráfica</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="enviado">Enviado !</string>
 </resources>

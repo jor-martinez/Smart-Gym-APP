@@ -3,6 +3,7 @@ package mx.infornet.smartgym;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
@@ -40,11 +41,9 @@ import java.util.regex.Pattern;
 public class LoginActivity extends AppCompatActivity {
 
     private TextInputEditText te_correo, te_password;
-    private MaterialButton button_login;
     private RequestQueue queue, queue_obj, queue_fuerza;
     private StringRequest request, request_get_objetivo, request_fuerza;
     private ProgressBar progressBar;
-    private TextView forget_pass;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,13 +51,13 @@ public class LoginActivity extends AppCompatActivity {
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_login);
 
-        forget_pass = findViewById(R.id.forget_pass);
+        TextView forget_pass = findViewById(R.id.forget_pass);
         forget_pass.setMovementMethod(LinkMovementMethod.getInstance());
 
         te_correo = findViewById(R.id.correo);
 
         te_password = findViewById(R.id.password);
-        button_login = findViewById(R.id.btn_login);
+        MaterialButton button_login = findViewById(R.id.btn_login);
         progressBar = findViewById(R.id.progressbar);
 
         progressBar.setIndeterminate(true);
@@ -320,13 +319,33 @@ public class LoginActivity extends AppCompatActivity {
                                             String datos_inc = jsonObjectError.getString("message");
                                             //Toast.makeText(getApplicationContext(), datos_inc, Toast.LENGTH_LONG).show();
 
-                                            new AlertDialog.Builder(LoginActivity.this)
+                                            final Dialog error_dialog = new Dialog(LoginActivity.this);
+                                            error_dialog.setContentView(R.layout.alert_error_layout);
+                                            error_dialog.setCancelable(false);
+
+                                            TextView msj = error_dialog.findViewById(R.id.mensaje);
+                                            TextView positive = error_dialog.findViewById(R.id.positive_btn);
+                                            TextView neutral = error_dialog.findViewById(R.id.neutral_btn);
+                                            neutral.setVisibility(View.GONE);
+
+                                            msj.setText(datos_inc);
+                                            positive.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View v) {
+                                                    error_dialog.dismiss();
+                                                }
+                                            });
+                                            //error_dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                                            error_dialog.show();
+
+
+                                            /*new AlertDialog.Builder(LoginActivity.this)
                                                     .setTitle("Error !")
                                                     .setMessage(datos_inc)
                                                     .setIcon(R.mipmap.error_black_icon)
                                                     .setCancelable(false)
                                                     .setPositiveButton("ok", null)
-                                                    .show();
+                                                    .show();*/
 
                                         } else if (err.equals("Membresia expirada")){
 

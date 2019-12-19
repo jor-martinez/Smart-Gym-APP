@@ -38,4 +38,8 @@ public class Config {
 
     public static final String POST_FUERZA_URL = "https://smartgym.infornet.mx/api/miembro/objetivo/aumentar-fuerza";
 
+    public static final String GET_PAGOS_URL = "https://smartgym.infornet.mx/api/miembro/pagos";
+
+    public static final String GET_PAGO_CURRENT_URL = "https://smartgym.infornet.mx/api/miembro/pagos/actual";
+
 }

@@ -28,6 +28,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -44,17 +45,18 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 
 public class HomeFragment extends Fragment {
 
     private View myView;
-    private String nombreUsuario, token, token_type, nombre_gym, apellidos, objetivo;
+    private String nombreUsuario, token, token_type, nombre_gym, apellidos, objetivo, fecha_fin="01/01/1999";
     private TextView txt_nombre, txt_gym_valor, txt_dias_restantes, txt_status, status_color;
     private RelativeLayout btn_rutinas, btn_alim, btn_progreso;
-    private StringRequest request;
-    private RequestQueue queue;
+    private StringRequest request_pago;
+    private RequestQueue queue_pago;
     private int channel_id = 100;
     private NotificationCompat.Builder mBuilder;
 
@@ -83,7 +85,7 @@ public class HomeFragment extends Fragment {
         btn_alim = myView.findViewById(R.id.btn_to_alimentacion);
         btn_progreso = myView.findViewById(R.id.btn_to_progreso);
 
-        queue = Volley.newRequestQueue(getContext());
+
 
         ConexionSQLiteHelper conn = new ConexionSQLiteHelper(getActivity(), "usuarios", null, 4);
         SQLiteDatabase db = conn.getWritableDatabase();
@@ -140,8 +142,9 @@ public class HomeFragment extends Fragment {
             }
         });
 
-
-        request = new StringRequest(Request.Method.GET, Config.GET_INFO_GYM_URL, new Response.Listener<String>() {
+        RequestQueue queue = Volley.newRequestQueue(getContext());
+        //Log.e("RESPONSE_GYM", jsonObject.toString());
+        StringRequest request = new StringRequest(Request.Method.GET, Config.GET_INFO_GYM_URL, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 try {
@@ -149,14 +152,14 @@ public class HomeFragment extends Fragment {
 
                     //Log.e("RESPONSE_GYM", jsonObject.toString());
 
-                    if (jsonObject.has("status")){
+                    if (jsonObject.has("status")) {
 
                         String status = jsonObject.getString("status");
 
-                        if (status.equals("Token is Expired")){
+                        if (status.equals("Token is Expired")) {
 
                             Toast.makeText(getContext(), "Token expirado. Favor de iniciar sesión nuevamente", Toast.LENGTH_LONG).show();
-                            ConexionSQLiteHelper  conn = new ConexionSQLiteHelper(getContext(), "usuarios", null, 4);
+                            ConexionSQLiteHelper conn = new ConexionSQLiteHelper(getContext(), "usuarios", null, 4);
                             SQLiteDatabase db = conn.getWritableDatabase();
                             db.execSQL("DELETE FROM usuarios");
 
@@ -173,7 +176,6 @@ public class HomeFragment extends Fragment {
 
                         txt_gym_valor.setText(nombre_gym);
                     }
-
 
 
                 } catch (JSONException e) {
@@ -202,33 +204,95 @@ public class HomeFragment extends Fragment {
 
         queue.add(request);
 
-        String nomCompleto = nombreUsuario + " " + apellidos;
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        Date fecha_final = new Date();
         try {
-            fecha_final = sdf.parse("07/12/2019");
-        } catch (ParseException e) {
+            RequestQueue queue_pago = Volley.newRequestQueue(getContext());
+            StringRequest request_pago = new StringRequest(Request.Method.GET, Config.GET_PAGO_CURRENT_URL, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+
+                    try {
+                        JSONObject jsonObject = new JSONObject(response);
+
+                        fecha_fin = jsonObject.getString("fecha_fin");
+
+                        //Log.d("fecha_fin", fecha_fin);
+
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+                        Date fecha_final = new Date();
+                        try {
+                            fecha_final = sdf.parse(fecha_fin);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+
+                        //Log.d("fecha final pago", fecha_final.toString());
+
+                        long dias = getDiasRestantes(new Date(), fecha_final ) + 1;
+                        String dias_res = dias+" días";
+
+                        //        Intent notifyIntent = new Intent(getContext(), BroadcastReceiver.class);
+                        //        PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), 0, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+                        if (dias > 0){
+                            txt_status.setText("Activo");
+                            status_color.setBackgroundColor(getResources().getColor(R.color.usuario_activo));
+
+                        } else{
+                            txt_status.setText("Inactivo");
+                            status_color.setBackgroundColor(getResources().getColor(R.color.design_default_color_error));
+                        }
+
+                        txt_dias_restantes.setText(dias_res);
+
+                    } catch (JSONException e){
+                        e.printStackTrace();
+                    }
+
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+
+                    if (error instanceof TimeoutError) {
+                        Toast.makeText(getContext(),
+                                "Oops. Timeout error!",
+                                Toast.LENGTH_LONG).show();
+                    }
+
+                    NetworkResponse networkResponse = error.networkResponse;
+
+                    if(networkResponse != null && networkResponse.data != null){
+                        String jsonError = new String(networkResponse.data);
+                        try {
+                            JSONObject jsonObjectError = new JSONObject(jsonError);
+                            Log.e("error_pago", jsonObjectError.toString());
+                        }catch (JSONException e){
+                            e.printStackTrace();
+                        }
+                    }
+
+                }
+            }){
+                @Override
+                public Map<String, String> getHeaders()throws AuthFailureError {
+                    HashMap<String, String> headers = new HashMap<>();
+                    headers.put("Authorization", token_type+" "+token);
+                    return headers;
+                }
+            };
+
+            queue_pago.add(request_pago);
+        } catch (Exception e){
             e.printStackTrace();
         }
 
-        long dias = getDiasRestantes(new Date(), fecha_final ) + 1;
-        String dias_res = dias+" días";
 
-//        Intent notifyIntent = new Intent(getContext(), BroadcastReceiver.class);
-//        PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), 0, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        String nomCompleto = nombreUsuario + " " + apellidos;
 
-        if (dias > 0){
-            txt_status.setText("Activo");
-            status_color.setBackgroundColor(getResources().getColor(R.color.usuario_activo));
-
-        } else{
-            txt_status.setText("Inactivo");
-            status_color.setBackgroundColor(getResources().getColor(R.color.design_default_color_error));
-        }
 
         //Log.e("DIAS_REST", dias);
         txt_nombre.setText(nomCompleto);
-        txt_dias_restantes.setText(dias_res);
+
 
 
         return myView;
@@ -248,13 +312,13 @@ public class HomeFragment extends Fragment {
         long diasTranscurridos = diferencia / diasMilli;
         diferencia = diferencia % diasMilli;
 
-        long horasTranscurridos = diferencia / horasMilli;
+        /*long horasTranscurridos = diferencia / horasMilli;
         diferencia = diferencia % horasMilli;
 
         long minutosTranscurridos = diferencia / minsMilli;
         diferencia = diferencia % minsMilli;
 
-        long segsTranscurridos = diferencia / segsMilli;
+        long segsTranscurridos = diferencia / segsMilli;*/
 
         return diasTranscurridos;
     }

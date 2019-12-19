@@ -3,6 +3,7 @@ package mx.infornet.smartgym;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.util.Patterns;
 import android.view.View;
 import android.view.Window;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.NetworkResponse;
@@ -97,25 +99,24 @@ public class ForgetPasswordActivity extends AppCompatActivity {
 
                                     //Log.d("RES_SET_PASS", jsonObject.toString());
 
-                                    AlertDialog.Builder builder = new AlertDialog.Builder(ForgetPasswordActivity.this);
-                                    builder.setTitle("Enviado !")
-                                    .setMessage(mensaje)
-                                    .setCancelable(false)
-                                    .setPositiveButton("ok", new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialog, int which) {
+                                    Dialog dialog = new Dialog(ForgetPasswordActivity.this);
+                                    dialog.setContentView(R.layout.alert_confirmation_layout);
+                                    dialog.setCancelable(false);
+                                    TextView ok = dialog.findViewById(R.id.positive_btn_confirm);
+                                    TextView cancel = dialog.findViewById(R.id.neutral_btn_confim);
+                                    TextView msj = dialog.findViewById(R.id.mensaje_confirm);
+                                    msj.setText(mensaje);
+                                    cancel.setVisibility(View.GONE);
+                                    ok.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            Intent intent = new Intent(ForgetPasswordActivity.this, LoginActivity.class);
+                                            startActivity(intent);
 
-                                                    Intent intent = new Intent(ForgetPasswordActivity.this, LoginActivity.class);
-                                                    startActivity(intent);
-
-                                                    ForgetPasswordActivity.this.finish();
-                                                }
-                                            });
-
-                                    AlertDialog alertDialog = builder.create();
-
-                                    alertDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
-                                    alertDialog.show();
+                                            ForgetPasswordActivity.this.finish();
+                                        }
+                                    });
+                                    dialog.show();
                                 }
 
                             } catch (JSONException e){
@@ -146,13 +147,28 @@ public class ForgetPasswordActivity extends AppCompatActivity {
 
                                     String err = jsonObjectError.getString("error");
 
-                                    new AlertDialog.Builder(ForgetPasswordActivity.this)
+                                    final Dialog dialog = new Dialog(ForgetPasswordActivity.this);
+                                    dialog.setCancelable(false);
+                                    dialog.setContentView(R.layout.alert_error_layout);
+                                    TextView ok = dialog.findViewById(R.id.positive_btn);
+                                    TextView cancel = dialog.findViewById(R.id.neutral_btn);
+                                    TextView msj = dialog.findViewById(R.id.mensaje);
+                                    cancel.setVisibility(View.GONE);
+                                    msj.setText(err);
+                                    ok.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            dialog.dismiss();
+                                        }
+                                    });
+                                    dialog.show();
+                                    /*new AlertDialog.Builder(ForgetPasswordActivity.this)
                                             .setTitle("Error !")
                                             .setMessage(err)
                                             .setIcon(R.mipmap.error_black_icon)
                                             .setCancelable(false)
                                             .setPositiveButton("ok", null)
-                                            .show();
+                                            .show();*/
 
 
                                 }catch (JSONException e){

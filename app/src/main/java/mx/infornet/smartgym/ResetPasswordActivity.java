@@ -3,6 +3,7 @@ package mx.infornet.smartgym;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
@@ -14,6 +15,7 @@ import android.util.Patterns;
 import android.view.View;
 import android.view.Window;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.NetworkResponse;
@@ -210,12 +212,29 @@ public class ResetPasswordActivity extends AppCompatActivity {
                                     } else if(jsonObjectError.has("error")){
                                         String no_user = jsonObjectError.getString("error");
 
-                                        new AlertDialog.Builder(ResetPasswordActivity.this)
+                                        final Dialog dialog = new Dialog(ResetPasswordActivity.this);
+                                        dialog.setContentView(R.layout.alert_error_layout);
+                                        dialog.setCancelable(false);
+                                        TextView ok = dialog.findViewById(R.id.positive_btn);
+                                        TextView cancel = dialog.findViewById(R.id.neutral_btn);
+                                        TextView msj = dialog.findViewById(R.id.mensaje);
+                                        cancel.setVisibility(View.GONE);
+                                        msj.setText(no_user);
+                                        ok.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                dialog.dismiss();
+                                            }
+                                        });
+                                        dialog.show();
+
+                                        /*new AlertDialog.Builder(ResetPasswordActivity.this)
                                                 .setTitle("Error !")
                                                 .setMessage(no_user)
                                                 .setCancelable(false)
                                                 .setPositiveButton("ok", null)
-                                                .show();
+                                                .show();*/
+
                                     } else if(jsonObjectError.has("status")){
 
                                         String status = jsonObjectError.getString("status");

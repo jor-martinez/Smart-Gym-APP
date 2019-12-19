@@ -8,9 +8,13 @@
 
     <color name="usuario_activo">#76ff03</color>
 
-    <color name="rojomaterial">#e74c3c</color>
-    <color name="azulmaterial">#3498db</color>
-    <color name="verdematerial">#2ecc71</color>
-    <color name="amarillomaterial">#f1c40f</color>
+    <color name="rojomaterial">#f8d7da</color>
+    <color name="rojoTextmaterial">#721c24</color>
+    <color name="azulmaterial">#cce5ff</color>
+    <color name="azulTextmaterial">#004085</color>
+    <color name="verdematerial">#d4edda</color>
+    <color name="verdeTextmaterial">#155724</color>
+    <color name="amarillomaterial">#fff3cd</color>
+    <color name="amarilloTextmaterial">#856404</color>
     <color name="naranjamaterial">#ff6a00</color>
 </resources>

@@ -45,7 +45,7 @@ import java.util.regex.Pattern;
 public class EditarDatosFragment extends Fragment implements View.OnClickListener{
 
     private View myView;
-    private String new_nombre, new_apellidos, new_fecha, new_tel, new_telEmer, new_condicion, token, token_type, new_correo, idUser;
+    private String nuevoSexo, nuevoObjetivo, new_nombre, new_apellidos, new_fecha, new_tel, new_telEmer, new_condicion, token, token_type, new_correo, idUser;
     private ProgressBar progressBar;
     private TextInputEditText nombre, apellidos, fecha, telefono, telEmer, condicion, correo;
     private MaterialButton btn_edit_datos;
@@ -91,6 +91,8 @@ public class EditarDatosFragment extends Fragment implements View.OnClickListene
                 new_telEmer = cursor.getString(cursor.getColumnIndex("telefonoEmergencia"));
                 new_condicion = cursor.getString(cursor.getColumnIndex("condicionFisica"));
                 new_correo = cursor.getString(cursor.getColumnIndex("email"));
+                nuevoSexo = cursor.getString(cursor.getColumnIndex("sexo"));
+                nuevoObjetivo = cursor.getString(cursor.getColumnIndex("objetivo"));
                 token = cursor.getString(cursor.getColumnIndex("token"));
                 token_type = cursor.getString(cursor.getColumnIndex("tokenType"));
             }
@@ -272,7 +274,7 @@ public class EditarDatosFragment extends Fragment implements View.OnClickListene
                         String jsonError = new String(networkResponse.data);
                         try {
                             JSONObject jsonObjectError = new JSONObject(jsonError);
-                            //Log.d("ERROR500", jsonObjectError.toString());
+                            Log.d("ERROR500", jsonObjectError.toString());
                             //String status = jsonObjectError.getString("status");
 
                             if (jsonObjectError.has("message")){
@@ -324,6 +326,8 @@ public class EditarDatosFragment extends Fragment implements View.OnClickListene
                     params.put("telefono_emergencia", nuevoTelEmer);
                     params.put("email", nuevoEmail);
                     params.put("condicion_fisica", nuevoCondicion);
+                    params.put("sexo", nuevoSexo);
+                    params.put("objetivo", nuevoObjetivo);
                     return params;
                 }
 
