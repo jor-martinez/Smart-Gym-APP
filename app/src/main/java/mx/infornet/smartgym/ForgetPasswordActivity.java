@@ -116,6 +116,7 @@ public class ForgetPasswordActivity extends AppCompatActivity {
                                             ForgetPasswordActivity.this.finish();
                                         }
                                     });
+                                    dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
                                     dialog.show();
                                 }
 

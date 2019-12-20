@@ -100,6 +100,10 @@ public class AlimentacionActivity extends AppCompatActivity {
             @Override
             public void onResponse(String response) {
 
+
+
+                Log.d("string response", response);
+
                 progressBar.setVisibility(View.GONE);
 
                 try {
@@ -122,7 +126,7 @@ public class AlimentacionActivity extends AppCompatActivity {
                             finish();
                         }
 
-                    } else if (jsonObject.toString().equals("")){
+                    } else if (jsonObject.toString().isEmpty()){
 
                         error.setVisibility(View.VISIBLE);
                         error.setText(R.string.erroralimentacion);

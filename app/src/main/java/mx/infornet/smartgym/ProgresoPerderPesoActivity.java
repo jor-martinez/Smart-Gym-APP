@@ -2,10 +2,13 @@ package mx.infornet.smartgym;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Dialog;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.BarChart;
@@ -48,7 +51,7 @@ public class ProgresoPerderPesoActivity extends AppCompatActivity {
 
         Cursor c = db.rawQuery("SELECT * FROM objetivo_perder_peso",null);
 
-        if (c.getCount() > 0){
+        if (c.getCount() > 1){
 
             //grafica de puntos, progreso peso
             LineChart lineChart = findViewById(R.id.chart_peso);
@@ -139,7 +142,24 @@ public class ProgresoPerderPesoActivity extends AppCompatActivity {
 
 
         } else {
-            Toast.makeText(getApplicationContext(), "Datos insuficientes", Toast.LENGTH_LONG).show();
+
+            final Dialog dialog = new Dialog(ProgresoPerderPesoActivity.this);
+            dialog.setContentView(R.layout.alert_info_layout);
+            dialog.setCancelable(false);
+            TextView mensaje = dialog.findViewById(R.id.mensaje_info);
+            TextView btnok = dialog.findViewById(R.id.positive_info);
+            TextView btncancel = dialog.findViewById(R.id.neutral_btn_info);
+            btncancel.setVisibility(View.GONE);
+            mensaje.setText(R.string.mensaje_info_nodata);
+            btnok.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+                }
+            });
+            dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+            dialog.show();
+
         }
 
         c.close();

@@ -226,6 +226,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
                                                 dialog.dismiss();
                                             }
                                         });
+                                        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
                                         dialog.show();
 
                                         /*new AlertDialog.Builder(ResetPasswordActivity.this)

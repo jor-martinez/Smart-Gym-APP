@@ -82,6 +82,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private String objetivo, token, token_type, fecha_termino="01/01/1999", fecha_fin="01/01/1999";
     private long dias;
     static long despues;
+    private Dialog dialog;
+    private ParseJson parseJson;
+    private List<Frases> frasesList;
 
     private int ID_PENDING = 1, ID_PENDING_AVANCE = 2;
 
@@ -101,6 +104,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
 
         dialog_report = new Dialog(context);
+        dialog = new Dialog(context);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -119,6 +123,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        Intent intent = getIntent();
+        int frasetrue = intent.getIntExtra("frase", 0);
+
+        if (frasetrue==1){
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    ShowFrase();
+                }
+            }, 3000);
+        }
 
         queue = Volley.newRequestQueue(getApplicationContext());
         //queue_obj = Volley.newRequestQueue(getApplicationContext());
@@ -364,6 +380,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         //prueba info de perder peso, despues se eliminará
         //ShowOkPerderPeso(70.5, 10, 3);
+
     }
 
     @Override
@@ -642,6 +659,54 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         long segsTranscurridos = diferencia / segsMilli;*/
 
         return diasTranscurridos;
+    }
+
+    public void ShowFrase(){
+        TextView la_frase, el_autor;
+        ImageButton cerrar_frase;
+
+        dialog.setContentView(R.layout.popup_frase);
+
+        cerrar_frase = dialog.findViewById(R.id.btn_close_popup);
+        la_frase = dialog.findViewById(R.id.frase);
+        el_autor = dialog.findViewById(R.id.autor_frase);
+
+        cerrar_frase.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        InputStream is = getResources().openRawResource(R.raw.frases_motivadoras);
+
+        try {
+            parseJson = new ParseJson();
+            frasesList = parseJson.readJsonStream(is);
+            System.out.println("Lectura json terminada");
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+
+        int numRandom = (int) (Math.random() * frasesList.size() + 1);
+
+        for (Frases frase : frasesList){
+            int id_frase = frase.getId();
+
+            if (id_frase == numRandom){
+                String frase_json = frase.getFrase();
+                String autor_json = frase.getAutor();
+
+                la_frase.setText(frase_json);
+                el_autor.setText(autor_json);
+            }
+        }
+
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.setCancelable(false);
+        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        dialog.show();
+
     }
 
 }

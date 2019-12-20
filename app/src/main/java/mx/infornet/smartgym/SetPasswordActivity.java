@@ -128,9 +128,9 @@ public class SetPasswordActivity extends AppCompatActivity {
                                         String postCondicionFisica = usuario.getString("condicion_fisica");
                                         String postEmail = usuario.getString("email");
                                         String postIdGym = usuario.getString("id_gimnasio");
-                                        String postIdPlan = usuario.getString("id_plan_entrenamiento");
+                                        //String postIdPlan = usuario.getString("id_plan_entrenamiento");
                                         //String postIdRutina = usuario.getString("id_rutina");
-                                        String postIdAlimentacion = usuario.getString("id_plan_alimentacion");
+                                        //String postIdAlimentacion = usuario.getString("id_plan_alimentacion");
 
                                         ConexionSQLiteHelper con = new ConexionSQLiteHelper(getApplicationContext(), "usuarios", null, 4);
                                         SQLiteDatabase db = con.getWritableDatabase();
@@ -149,9 +149,9 @@ public class SetPasswordActivity extends AppCompatActivity {
                                         values.put("telefonoEmergencia", postTelEmergencia);
                                         values.put("condicionFisica", postCondicionFisica);
                                         values.put("idGimnasio", postIdGym);
-                                        values.put("idPlan", postIdPlan);
+                                        //values.put("idPlan", postIdPlan);
                                         //values.put("idRutina", postIdRutina);
-                                        values.put("idPlanAlimentacion", postIdAlimentacion);
+                                        //values.put("idPlanAlimentacion", postIdAlimentacion);
                                         values.put("token", postToken);
                                         values.put("tokenType", tokenType);
                                         values.put("tokenExpire", tokenExpire);
@@ -161,7 +161,7 @@ public class SetPasswordActivity extends AppCompatActivity {
 
                                         //Toast.makeText(getApplicationContext(), mensaje, Toast.LENGTH_LONG).show();
 
-                                        Dialog dialog = new Dialog(SetPasswordActivity.this);
+                                        final Dialog dialog = new Dialog(SetPasswordActivity.this);
                                         dialog.setContentView(R.layout.alert_confirmation_layout);
                                         dialog.setCancelable(false);
                                         TextView titulo = dialog.findViewById(R.id.title_confirm);
@@ -174,6 +174,9 @@ public class SetPasswordActivity extends AppCompatActivity {
                                         ok.setOnClickListener(new View.OnClickListener() {
                                             @Override
                                             public void onClick(View v) {
+
+                                                dialog.dismiss();
+
                                                 if (postObjetivo.equals("Perder peso")){
                                                     request_obj = new StringRequest(Request.Method.GET, Config.GET_OBJ_PESO_URL, new Response.Listener<String>() {
                                                         @Override

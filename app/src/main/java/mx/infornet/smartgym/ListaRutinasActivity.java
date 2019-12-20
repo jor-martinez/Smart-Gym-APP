@@ -40,7 +40,7 @@ public class ListaRutinasActivity extends AppCompatActivity {
     private ImageView btn_back;
     private TextView error, tvcurrPag;
     private ProgressBar progressBar;
-    private Button anterior, siguiente;
+    private Button anterior, siguiente, primer, ultimo;
     private RequestQueue queue, queuePag;
     private RecyclerView recyclerView;
     private String token, token_type;
@@ -64,6 +64,10 @@ public class ListaRutinasActivity extends AppCompatActivity {
         siguiente.setVisibility(View.GONE);
         tvcurrPag = findViewById(R.id.tv_current_pag_lista_rutinas);
         tvcurrPag.setVisibility(View.GONE);
+        primer = findViewById(R.id.primero_lista_rutinas);
+        primer.setVisibility(View.GONE);
+        ultimo = findViewById(R.id.ultimo_lista_rutinas);
+        ultimo.setVisibility(View.GONE);
 
         progressBar = findViewById(R.id.prog_bar_lista_rutinas);
         progressBar.setVisibility(View.VISIBLE);
@@ -133,10 +137,14 @@ public class ListaRutinasActivity extends AppCompatActivity {
                         anterior.setVisibility(View.GONE);
                         siguiente.setVisibility(View.GONE);
                         tvcurrPag.setVisibility(View.GONE);
+                        primer.setVisibility(View.GONE);
+                        ultimo.setVisibility(View.GONE);
                     } else {
                         anterior.setVisibility(View.VISIBLE);
                         siguiente.setVisibility(View.VISIBLE);
                         tvcurrPag.setVisibility(View.VISIBLE);
+                        primer.setVisibility(View.VISIBLE);
+                        ultimo.setVisibility(View.VISIBLE);
                         GetRutinas(currentPag);
                     }
 
@@ -199,6 +207,22 @@ public class ListaRutinasActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(getApplicationContext(), "No hay más páginas", Toast.LENGTH_LONG).show();
                 }
+            }
+        });
+
+        primer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                currentPag=1;
+                GetRutinas(currentPag);
+            }
+        });
+
+        ultimo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                currentPag=numPaginas;
+                GetRutinas(currentPag);
             }
         });
 

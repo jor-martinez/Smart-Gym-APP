@@ -53,7 +53,7 @@ public class HomeFragment extends Fragment {
 
     private View myView;
     private String nombreUsuario, token, token_type, nombre_gym, apellidos, objetivo, fecha_fin="01/01/1999";
-    private TextView txt_nombre, txt_gym_valor, txt_dias_restantes, txt_status, status_color;
+    private TextView txt_nombre, txt_gym_valor, txt_dias_restantes, txt_status, status_color, txt_fecha_expira;
     private RelativeLayout btn_rutinas, btn_alim, btn_progreso;
     private StringRequest request_pago;
     private RequestQueue queue_pago;
@@ -78,7 +78,8 @@ public class HomeFragment extends Fragment {
 
         txt_nombre = myView.findViewById(R.id.txt_nombre);
         txt_gym_valor = myView.findViewById(R.id.txt_gym_value);
-        txt_dias_restantes = myView.findViewById(R.id.txt_until_value);
+        txt_dias_restantes = myView.findViewById(R.id.txt_dias);
+        txt_fecha_expira = myView.findViewById(R.id.txt_until_value);
         txt_status = myView.findViewById(R.id.txt_status_value);
         status_color = myView.findViewById(R.id.status_color);
         btn_rutinas = myView.findViewById(R.id.btn_to_rutinas);
@@ -225,6 +226,9 @@ public class HomeFragment extends Fragment {
                             e.printStackTrace();
                         }
 
+                        SimpleDateFormat output = new SimpleDateFormat("dd/MMM/yyyy", Locale.getDefault());
+                        String formatted = output.format(fecha_final);
+
                         //Log.d("fecha final pago", fecha_final.toString());
 
                         long dias = getDiasRestantes(new Date(), fecha_final ) + 1;
@@ -243,6 +247,7 @@ public class HomeFragment extends Fragment {
                         }
 
                         txt_dias_restantes.setText(dias_res);
+                        txt_fecha_expira.setText(formatted);
 
                     } catch (JSONException e){
                         e.printStackTrace();

@@ -1,39 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
     android:layout_width="350dp"
     android:layout_height="200dp"
-    android:background="@color/verdematerial"
-    android:orientation="vertical"
+    android:background="@color/amarillomaterial"
     android:padding="16dp">
-
-
 
     <ImageView
         android:id="@+id/imageView7"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:contentDescription="@string/error"
-        android:tint="@color/verdeTextmaterial"
         android:layout_centerHorizontal="true"
-        app:srcCompat="@mipmap/done_icon" />
+        android:layout_gravity="center_vertical"
+        android:contentDescription="@string/error"
+        android:tint="@color/amarilloTextmaterial"
+        app:srcCompat="@mipmap/problemicon" />
 
     <TextView
-        android:id="@+id/title_confirm"
+        android:id="@+id/textView27"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         android:layout_below="@id/imageView7"
-        android:text="@string/enviado"
-        android:textColor="@color/verdeTextmaterial"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="bottom|center_vertical"
+        android:text="@string/atencion"
+        android:textColor="@color/amarilloTextmaterial"
         android:textSize="20sp" />
 
 
     <TextView
-        android:id="@+id/mensaje_confirm"
+        android:id="@+id/mensaje_warning"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/title_confirm"
+        android:layout_below="@id/textView27"
         android:layout_centerInParent="true"
         android:layout_marginTop="8dp"
         android:text="@string/error"
@@ -42,7 +42,7 @@
 
 
     <TextView
-        android:id="@+id/neutral_btn_confim"
+        android:id="@+id/neutral_btn_warning"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -50,11 +50,11 @@
         android:clickable="true"
         android:focusable="true"
         android:text="@string/cancelar"
-        android:textColor="@color/verdeTextmaterial"
+        android:textColor="@color/amarilloTextmaterial"
         android:textSize="16sp" />
 
     <TextView
-        android:id="@+id/positive_btn_confirm"
+        android:id="@+id/positive_btn_warning"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
@@ -66,7 +66,7 @@
         android:paddingStart="10dp"
         android:paddingEnd="10dp"
         android:text="@string/ok"
-        android:textColor="@color/verdeTextmaterial"
+        android:textColor="@color/amarilloTextmaterial"
         android:textSize="16sp" />
 
 </RelativeLayout>

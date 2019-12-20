@@ -336,6 +336,7 @@ public class LoginActivity extends AppCompatActivity {
                                                 }
                                             });
                                             //error_dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                                            error_dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
                                             error_dialog.show();
 
 

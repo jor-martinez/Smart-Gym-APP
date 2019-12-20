@@ -42,7 +42,13 @@
         <activity
             android:name=".PrePerderPesoActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".ProgresoPerderPesoActivity" />
+        <activity
+            android:name=".ProgresoPerderPesoActivity"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
         <activity
             android:name=".AvancePerderPesoActivity"
             android:screenOrientation="portrait" />

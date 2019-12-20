@@ -4,43 +4,39 @@
     android:layout_width="350dp"
     android:layout_height="200dp"
     android:background="@color/rojomaterial"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="16dp">
 
 
-    <LinearLayout
+    <ImageView
+        android:id="@+id/imageView7"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_vertical"
+        android:contentDescription="@string/error"
+        android:tint="@color/rojoTextmaterial"
+        app:srcCompat="@mipmap/error_black_icon" />
+
+    <TextView
+        android:id="@+id/textView27"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@id/imageView7"
         android:layout_centerHorizontal="true"
-        android:orientation="horizontal">
+        android:layout_gravity="bottom|center_vertical"
+        android:text="@string/error"
+        android:textColor="@color/rojoTextmaterial"
+        android:textSize="20sp" />
 
-        <ImageView
-            android:id="@+id/imageView7"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_gravity="center_vertical"
-            android:layout_marginTop="8dp"
-            android:contentDescription="@string/error"
-            android:tint="@color/rojoTextmaterial"
-            app:srcCompat="@mipmap/error_black_icon" />
-
-        <TextView
-            android:id="@+id/textView27"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center_vertical"
-            android:layout_marginStart="16dp"
-            android:text="@string/error"
-            android:textColor="@color/rojoTextmaterial"
-            android:textSize="20sp" />
-    </LinearLayout>
 
     <TextView
         android:id="@+id/mensaje"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/textView27"
         android:layout_centerInParent="true"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
+        android:layout_marginTop="8dp"
         android:text="@string/error"
         android:textColor="@color/colorSecundary"
         android:textSize="18sp" />
@@ -51,8 +47,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="16dp"
-        android:layout_marginBottom="16dp"
         android:background="?android:attr/selectableItemBackground"
         android:clickable="true"
         android:focusable="true"
@@ -66,8 +60,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
         android:background="?android:attr/selectableItemBackground"
         android:clickable="true"
         android:focusable="true"

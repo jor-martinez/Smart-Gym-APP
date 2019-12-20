@@ -3,6 +3,7 @@ package mx.infornet.smartgym;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -96,57 +97,59 @@ public class VerRutinaMiembroActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                final AlertDialog.Builder builder = new AlertDialog.Builder(VerRutinaMiembroActivity.this);
-                builder.setTitle("Alerta !")
-                .setMessage("¿Estás seguro de eliminar ésta rutina?")
-                .setCancelable(false)
-                .setIcon(R.mipmap.warning_black_icon)
-                .setPositiveButton("Si", new DialogInterface.OnClickListener() {
+                final Dialog dialog = new Dialog(VerRutinaMiembroActivity.this);
+                dialog.setCancelable(false);
+                dialog.setContentView(R.layout.alert_warning_layout);
+                TextView mensaje = dialog.findViewById(R.id.mensaje_warning);
+                TextView btnok = dialog.findViewById(R.id.positive_btn_warning);
+                TextView btncancel = dialog.findViewById(R.id.neutral_btn_warning);
+                mensaje.setText("¿Estás seguro de eliminar ésta rutina de tu lista?");
+                btnok.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        request = new StringRequest(Request.Method.DELETE, Config.DELETE_RUTINA + id + "/eliminar-rutina", new Response.Listener<String>() {
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                request = new StringRequest(Request.Method.DELETE, Config.DELETE_RUTINA + id + "/eliminar-rutina", new Response.Listener<String>() {
-                                    @Override
-                                    public void onResponse(String response) {
-                                        try {
-                                            JSONObject jsonObject = new JSONObject(response);
-                                            Log.e("RES_DELTE", jsonObject.toString());
+                            public void onResponse(String response) {
+                                try {
+                                    JSONObject jsonObject = new JSONObject(response);
+                                    Log.e("RES_DELTE", jsonObject.toString());
 
-                                            String msg = jsonObject.getString("message");
-                                            Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+                                    String msg = jsonObject.getString("message");
+                                    Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
 
-                                            startActivity(new Intent(VerRutinaMiembroActivity.this, RutinasActivity.class));
-                                            finish();
+                                    startActivity(new Intent(VerRutinaMiembroActivity.this, RutinasActivity.class));
+                                    finish();
 
-                                        }catch (JSONException e){
-                                            Log.e("ERRORJSON_DELTE", e.toString());
-                                        }
-                                    }
-                                }, new Response.ErrorListener() {
-                                    @Override
-                                    public void onErrorResponse(VolleyError error) {
-                                        Log.e("ERROR_RESP", error.toString());
-                                    }
-                                }){
-                                    @Override
-                                    public Map<String, String> getHeaders()throws AuthFailureError {
-                                        HashMap<String, String> headers = new HashMap<>();
-                                        headers.put("Authorization", token_type+" "+token);
-                                        return headers;
-                                    }
-                                };
-
-                                queue.add(request);
+                                }catch (JSONException e){
+                                    Log.e("ERRORJSON_DELTE", e.toString());
+                                }
                             }
-                        })
-                .setNeutralButton("Cancelar", new DialogInterface.OnClickListener() {
+                        }, new Response.ErrorListener() {
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {
+                            public void onErrorResponse(VolleyError error) {
+                                Log.e("ERROR_RESP", error.toString());
                             }
-                        });
+                        }){
+                            @Override
+                            public Map<String, String> getHeaders()throws AuthFailureError {
+                                HashMap<String, String> headers = new HashMap<>();
+                                headers.put("Authorization", token_type+" "+token);
+                                return headers;
+                            }
+                        };
 
-                AlertDialog alertDialog = builder.create();
-                alertDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
-                alertDialog.show();
+                        queue.add(request);
+                    }
+                });
+                btncancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+                dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+                dialog.show();
+
 
             }
         });

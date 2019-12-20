@@ -40,10 +40,8 @@ public class PreLoaderActivity extends AppCompatActivity {
     private StringRequest request_peso, request_fuerza;
     private RequestQueue queue;
     private Integer res;
-    private ParseJson parseJson;
-    private List<Frases> frasesList;
     private String token, token_type, objetivo;
-    private Dialog dialog;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +50,6 @@ public class PreLoaderActivity extends AppCompatActivity {
 
         queue = Volley.newRequestQueue(getApplicationContext());
 
-        dialog = new Dialog(getApplicationContext());
 
         ConexionSQLiteHelper conexion = new ConexionSQLiteHelper(getApplicationContext(), "usuarios", null, 4);
         SQLiteDatabase db = conexion.getWritableDatabase();
@@ -98,6 +95,7 @@ public class PreLoaderActivity extends AppCompatActivity {
 
                                 } else {
                                     Intent i = new Intent(PreLoaderActivity.this, MainActivity.class);
+                                    i.putExtra("frase", 1);
                                     startActivity(i);
                                     PreLoaderActivity.this.finish();
 
@@ -178,6 +176,7 @@ public class PreLoaderActivity extends AppCompatActivity {
 
                                 } else {
                                     Intent i = new Intent(PreLoaderActivity.this, MainActivity.class);
+                                    i.putExtra("frase", 1);
                                     startActivity(i);
                                     PreLoaderActivity.this.finish();
 
@@ -259,51 +258,5 @@ public class PreLoaderActivity extends AppCompatActivity {
 
     }
 
-    public void ShowFrase(){
-        TextView la_frase, el_autor;
-        ImageButton cerrar_frase;
 
-        dialog.setContentView(R.layout.popup_frase);
-
-        cerrar_frase = dialog.findViewById(R.id.btn_close_popup);
-        la_frase = dialog.findViewById(R.id.frase);
-        el_autor = dialog.findViewById(R.id.autor_frase);
-
-        cerrar_frase.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
-
-        InputStream is = getResources().openRawResource(R.raw.frases_motivadoras);
-
-        try {
-            parseJson = new ParseJson();
-            frasesList = parseJson.readJsonStream(is);
-            System.out.println("Lectura json terminada");
-        } catch (IOException e){
-            e.printStackTrace();
-        }
-
-        int numRandom = (int) (Math.random() * frasesList.size() + 1);
-
-        for (Frases frase : frasesList){
-            int id_frase = frase.getId();
-
-            if (id_frase == numRandom){
-                String frase_json = frase.getFrase();
-                String autor_json = frase.getAutor();
-
-                la_frase.setText(frase_json);
-                el_autor.setText(autor_json);
-            }
-        }
-
-        //dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialog.setCancelable(false);
-        //dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
-        dialog.show();
-
-    }
 }
