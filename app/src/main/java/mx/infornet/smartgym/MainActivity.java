@@ -35,6 +35,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -81,7 +82,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private RequestQueue queue, queue_pago;
     private String objetivo, token, token_type, fecha_termino="01/01/1999", fecha_fin="01/01/1999";
     private long dias;
-    static long despues;
     private Dialog dialog;
     private ParseJson parseJson;
     private List<Frases> frasesList;
@@ -262,7 +262,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             ConexionSQLiteHelper conexion = new ConexionSQLiteHelper(getApplicationContext(), "objetivo_perder_peso", null, 4);
             SQLiteDatabase dbp = conexion.getWritableDatabase();
 
-
             try {
 
                 String query = "SELECT * FROM objetivo_perder_peso where _ID=1";
@@ -306,7 +305,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (hoy >= despues) {
 
 
-
                 Intent in = new Intent(getApplicationContext(), BroadcastAvancePerderPeso.class);
                 PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), ID_PENDING_AVANCE, in, PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -317,6 +315,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 //en teoria deberia preguntar si quiere otro objetivo y se tendria que eliminar la bd y los datos en backend
 
                 //Tambien se borraría la tabla del objetivo perder peso
+
+                ShowNewObjetivoUno(objetivo);
+
             }
 
 
@@ -374,6 +375,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 //en teoria deberia preguntar si quiere otro objetivo y se tendria que eliminar la bd y los datos en backend
 
                 //Tambien se borraría la tabla del objetivo perder peso
+
+                ShowNewObjetivoUno(objetivo);
+
             }
 
         }
@@ -709,4 +713,94 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
+    public void ShowNewObjetivoUno(final String obj){
+
+        final Dialog dialog = new Dialog(MainActivity.this);
+        dialog.setCancelable(false);
+        dialog.setContentView(R.layout.restart_objetivo_uno);
+        final RadioButton reiniciar = dialog.findViewById(R.id.rb1_reiniciar);
+        final RadioButton nuevo = dialog.findViewById(R.id.rb1_nuevo);
+        final RadioButton ninguno = dialog.findViewById(R.id.rb1_ninguno);
+        MaterialButton btnsig = dialog.findViewById(R.id.btn_new_objetivo1);
+        btnsig.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (reiniciar.isChecked()){
+
+                    if (obj.equals("Perder peso")){
+                        ConexionSQLiteHelper  conn = new ConexionSQLiteHelper(getApplicationContext(), "objetivo_perder_peso", null, 4);
+                        SQLiteDatabase db = conn.getWritableDatabase();
+                        db.execSQL("DELETE FROM objetivo_perder_peso");
+                        db.close();
+
+                        //se tendrian que pedir nuevamente los datos
+                        startActivity(new Intent(MainActivity.this, PrePerderPesoActivity.class));
+                    } else if (obj.equals("Incrementar fuerza")){
+
+                        ConexionSQLiteHelper  conn = new ConexionSQLiteHelper(getApplicationContext(), "objetivo_fuerza", null, 4);
+                        SQLiteDatabase db = conn.getWritableDatabase();
+                        db.execSQL("DELETE FROM objetivo_fuerza");
+                        db.close();
+
+                        //se tendrian que pedir nuevamente los datos
+                        startActivity(new Intent(MainActivity.this, PreFuerzaActivity.class));
+
+                    } else if (obj.equals("Aumentar masa muscular")){
+
+                        //pendiente
+
+                    }
+
+                } else if (nuevo.isChecked()){
+                    dialog.dismiss();
+                    //se muestra el layout de los objetivos
+
+                    Dialog dialog1 = new Dialog(MainActivity.this);
+                    dialog1.setCancelable(false);
+                    dialog1.setContentView(R.layout.spinner_objetivos_layout);
+                    dialog1.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+                    final RadioButton peso = dialog1.findViewById(R.id.rb2_peso);
+                    final RadioButton fuerza = dialog1.findViewById(R.id.rb2_fuerza);
+                    final RadioButton masa = dialog1.findViewById(R.id.rb2_masa);
+                    if (obj.equals("Perder peso")){
+                        peso.setEnabled(false);
+                    } else if (obj.equals("Incrementar fuerza")){
+                        fuerza.setEnabled(false);
+                    } else if (obj.equals("Aumentar masa muscular")){
+                        masa.setEnabled(false);
+                    }
+                    MaterialButton sig = dialog1.findViewById(R.id.btn_new_objetivo2);
+                    sig.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (fuerza.isChecked()){
+
+                                //se inicia el progreso de fuerza
+                                startActivity(new Intent(MainActivity.this, PreFuerzaActivity.class));
+
+                            } else if (masa.isChecked()){
+
+                                //se inicia el progreso para aumentar masa muscular
+
+                            } else if (peso.isChecked()){
+
+                                //se inicia el progreso de perder peso
+                                startActivity(new Intent(MainActivity.this, PrePerderPesoActivity.class));
+
+                            }
+                        }
+                    });
+                    dialog1.show();
+
+                } else if (ninguno.isChecked()){
+                    //no se hace ninguna accion
+                    dialog.dismiss();
+
+                }
+            }
+        });
+        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        dialog.show();
+
+    }
 }

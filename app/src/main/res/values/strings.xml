@@ -108,4 +108,10 @@
     <string name="aviso">Aviso !</string>
     <string name="mensaje_info_nodata">Lo sentimos, no podemos mostrar tu progreso hasta que hayas ingresado mas datos</string>
     <string name="atencion">Atención !</string>
+    <string name="objetivo">Objetivo</string>
+    <string name="info1_new_obj">Terminó el tiempo que estableciste para tu objetivo, selecciona la accion con la que quisieras continuar</string>
+    <string name="info2_new_obj">Selecciona que objetivo quieres iniciar</string>
+    <string name="reiniciar_mi_objetivo">Reiniciar mi objetivo</string>
+    <string name="iniciar_un_nuevo_objetivo">Iniciar un nuevo objetivo</string>
+    <string name="ninguno">Ninguno</string>
 </resources>
