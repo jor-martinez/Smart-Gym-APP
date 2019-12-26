@@ -30,7 +30,7 @@ public class BoadcastManager extends BroadcastReceiver {
 
         mBuilder = new NotificationCompat.Builder(context, null);
 
-        Intent notificationIntent = new Intent(context, AvancePerderPesoActivity.class);
+        Intent notificationIntent = new Intent(context, MainActivity.class);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent intent1 = PendingIntent.getActivity(context, 0, notificationIntent, 0);
 

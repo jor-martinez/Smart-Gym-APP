@@ -187,75 +187,42 @@ public class PrePerderPesoActivity extends AppCompatActivity {
 
                                 switch (tiempo_int){
                                     case 1:
-                                        boolean alarmUP = (PendingIntent.getBroadcast(getApplicationContext(), ID_PENDING_AVANCE, new Intent(getApplicationContext(), BroadcastAvancePerderPeso.class), PendingIntent.FLAG_NO_CREATE) != null);
+                                        Calendar c = Calendar.getInstance();
+                                        c.add(Calendar.WEEK_OF_MONTH, 1);
+                                        c.set(Calendar.HOUR, 12);
 
-                                        if (alarmUP){
-                                            Log.d("alarma_avance", "Alarma YA activada");
-                                        } else {
+                                        Log.d("sig semana", c.getTime().toString());
 
-                                            Calendar c = Calendar.getInstance();
-                                            c.add(Calendar.WEEK_OF_MONTH, 1);
-                                            c.set(Calendar.HOUR, 12);
+                                        Intent in = new Intent(getApplicationContext(), BroadcastAvancePerderPeso.class);
+                                        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), ID_PENDING_AVANCE, in, PendingIntent.FLAG_UPDATE_CURRENT);
 
-                                            Log.d("sig semana", c.getTime().toString());
+                                        AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
-                                            Intent in = new Intent(getApplicationContext(), BroadcastAvancePerderPeso.class);
-                                            PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), ID_PENDING_AVANCE, in, PendingIntent.FLAG_UPDATE_CURRENT);
+                                        Log.d("alarma_avance", "alarma iniciada");
+                                        am.setRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), 7*1440*60000, pendingIntent);
 
-                                            AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-
-                                            Log.d("alarma_avance", "alarma iniciada");
-                                            am.setRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), 7*1440*60000, pendingIntent);
-                                        }
                                         break;
+
                                     case 2:
-                                        boolean alarmUP1 = (PendingIntent.getBroadcast(getApplicationContext(), ID_PENDING_AVANCE, new Intent(getApplicationContext(), BroadcastAvancePerderPeso.class), PendingIntent.FLAG_NO_CREATE) != null);
-
-                                        if (alarmUP1){
-                                            Log.d("alarma_avance", "Alarma YA activada");
-                                        } else {
-
-                                            Calendar c = Calendar.getInstance();
-                                            c.add(Calendar.WEEK_OF_MONTH, 2);
-                                            c.set(Calendar.HOUR, 12);
-
-                                            Log.d("sig semana", c.getTime().toString());
-
-                                            Intent in = new Intent(getApplicationContext(), BroadcastAvancePerderPeso.class);
-                                            PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), ID_PENDING_AVANCE, in, PendingIntent.FLAG_UPDATE_CURRENT);
-
-                                            AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-
-                                            Log.d("alarma_avance", "alarma iniciada");
-                                            am.setRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), (7*1440*60000)*2, pendingIntent);
-                                        }
-
-                                        break;
 
                                     case 3:
+                                        Calendar c1 = Calendar.getInstance();
+                                        c1.add(Calendar.WEEK_OF_MONTH, 2);
+                                        c1.set(Calendar.HOUR, 12);
 
-                                        boolean alarmUP2 = (PendingIntent.getBroadcast(getApplicationContext(), ID_PENDING_AVANCE, new Intent(getApplicationContext(), BroadcastAvancePerderPeso.class), PendingIntent.FLAG_NO_CREATE) != null);
+                                        Log.d("sig semana", c1.getTime().toString());
 
-                                        if (alarmUP2){
-                                            Log.d("alarma_avance", "Alarma YA activada");
-                                        } else {
+                                        Intent in1 = new Intent(getApplicationContext(), BroadcastAvancePerderPeso.class);
+                                        PendingIntent pendingIntent1 = PendingIntent.getBroadcast(getApplicationContext(), ID_PENDING_AVANCE, in1, PendingIntent.FLAG_UPDATE_CURRENT);
 
-                                            Calendar c = Calendar.getInstance();
-                                            c.add(Calendar.WEEK_OF_MONTH, 2);
-                                            c.set(Calendar.HOUR, 12);
+                                        AlarmManager am1 = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
-                                            Log.d("sig semana", c.getTime().toString());
+                                        Log.d("alarma_avance", "alarma iniciada");
+                                        am1.setRepeating(AlarmManager.RTC_WAKEUP, c1.getTimeInMillis(), (7*1440*60000)*2, pendingIntent1);
 
-                                            Intent in = new Intent(getApplicationContext(), BroadcastAvancePerderPeso.class);
-                                            PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), ID_PENDING_AVANCE, in, PendingIntent.FLAG_UPDATE_CURRENT);
-
-                                            AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-
-                                            Log.d("alarma_avance", "alarma iniciada");
-                                            am.setRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), (7*1440*60000)*2, pendingIntent);
-                                        }
 
                                         break;
+
                                 }
 
                                 ShowOkPerderPeso(peso_decimal, meta_int, tiempo_int);
