@@ -259,6 +259,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         if (objetivo.equals("Perder peso")){
+
             ConexionSQLiteHelper conexion = new ConexionSQLiteHelper(getApplicationContext(), "objetivo_perder_peso", null, 4);
             SQLiteDatabase dbp = conexion.getWritableDatabase();
 
@@ -319,7 +320,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 ShowNewObjetivoUno(objetivo);
 
             }
-
 
         } else if (objetivo.equals("Incrementar fuerza")){
 
@@ -735,6 +735,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                         //se tendrian que pedir nuevamente los datos
                         startActivity(new Intent(MainActivity.this, PrePerderPesoActivity.class));
+
                     } else if (obj.equals("Incrementar fuerza")){
 
                         ConexionSQLiteHelper  conn = new ConexionSQLiteHelper(getApplicationContext(), "objetivo_fuerza", null, 4);
@@ -752,6 +753,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
 
                 } else if (nuevo.isChecked()){
+
                     dialog.dismiss();
                     //se muestra el layout de los objetivos
 
@@ -762,12 +764,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     final RadioButton peso = dialog1.findViewById(R.id.rb2_peso);
                     final RadioButton fuerza = dialog1.findViewById(R.id.rb2_fuerza);
                     final RadioButton masa = dialog1.findViewById(R.id.rb2_masa);
-                    if (obj.equals("Perder peso")){
-                        peso.setEnabled(false);
-                    } else if (obj.equals("Incrementar fuerza")){
-                        fuerza.setEnabled(false);
-                    } else if (obj.equals("Aumentar masa muscular")){
-                        masa.setEnabled(false);
+                    switch (obj) {
+                        case "Perder peso":
+                            peso.setEnabled(false);
+                            break;
+                        case "Incrementar fuerza":
+                            fuerza.setEnabled(false);
+                            break;
+                        case "Aumentar masa muscular":
+                            masa.setEnabled(false);
+                            break;
                     }
                     MaterialButton sig = dialog1.findViewById(R.id.btn_new_objetivo2);
                     sig.setOnClickListener(new View.OnClickListener() {

@@ -134,8 +134,6 @@ public class PrePerderPesoActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
 
-
-
                     request_save_perder_peso = new JsonObjectRequest(Request.Method.POST, Config.POST_PERDER_PESO_URL, json_save, new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
@@ -183,7 +181,6 @@ public class PrePerderPesoActivity extends AppCompatActivity {
                                 db.close();
 
                                 Log.d("datos peso save", "se guardaron los datos en la base de datos perder peso");
-
 
                                 switch (tiempo_int){
                                     case 1:
